@@ -1,8 +1,10 @@
 
 
-### 데이터베이스 1
+데이터베이스 1
 
-## 데이터를 관리하는 방법 두 가지
+
+
+데이터를 관리하는 방법 두 가지
 
 1. 파일
    1. 배우기 쉽다
@@ -14,7 +16,7 @@
       2. Mongo DB
       3. ETC
 
-## 데이터베이스의 본질
+데이터베이스의 본질
 
 - CRUD
   - Create
@@ -23,7 +25,7 @@
   - Delete
 - 그 외 복잡한 기능들은 CRUD를 서포트하는 것이라고 생각해도 된다.
 
-## File ve Database
+File ve Database
 
 - 데이터베이스의 등장배경
   - 데이터를 빠르고, 편리하고, 안전하게 다루고 싶은 필요에 의해 생겨나게 됨.
@@ -32,7 +34,8 @@
   - File -> Spreadsheet -> Database
 
 
-### 데이터베이스 2
+
+데이터베이스 2
 
 - RDBMS란?
   - 데이터를 표의 형태로 정렬
@@ -57,14 +60,14 @@
 
 
 
-### SQL
+SQL
 
 - Structured Query Language
 
-## MySQL Command
+MySQL Command
 
 시작
-'''
+
     cd /usr/local/mysql/bin 
     ./mysql -uroot -p
 
