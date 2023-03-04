@@ -200,7 +200,8 @@ DB 사용
 JOIN 예제
 
 - 독립적이고, 분리된 테이블을 하나의 테이블로 읽을 수 있다.
-- 예제 테이블
+- 예제 테이블   
+~~~mysql
 structure for table `author`
 --
  
@@ -241,9 +242,8 @@ INSERT INTO `topic` VALUES (1,'MySQL','MySQL is...','2018-01-01 12:10:11',1);
 INSERT INTO `topic` VALUES (2,'Oracle','Oracle is ...','2018-01-03 13:01:10',1);
 INSERT INTO `topic` VALUES (3,'SQL Server','SQL Server is ...','2018-01-20 11:01:10',2);
 INSERT INTO `topic` VALUES (4,'PostgreSQL','PostgreSQL is ...','2018-01-23 01:03:03',3);
-INSERT INTO `topic` VALUES (5,'MongoDB','MongoDB is ...','2018-01-30 12:31:03',1);    
-
-
+INSERT INTO `topic` VALUES (5,'MongoDB','MongoDB is ...','2018-01-30 12:31:03',1);
+~~~
 id를 기준으로 하여 부착하여 읽음
 
     SELECT * FROM topic LEFT JOIN author ON topic.author_id = author.id;
