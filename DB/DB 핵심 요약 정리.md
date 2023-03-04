@@ -202,7 +202,7 @@ JOIN 예제
 
 - 독립적이고, 분리된 테이블을 하나의 테이블로 읽을 수 있다.
 - 예제 테이블
-
+    '''
     structure for table `author`
     --
      
@@ -244,7 +244,7 @@ JOIN 예제
     INSERT INTO `topic` VALUES (3,'SQL Server','SQL Server is ...','2018-01-20 11:01:10',2);
     INSERT INTO `topic` VALUES (4,'PostgreSQL','PostgreSQL is ...','2018-01-23 01:03:03',3);
     INSERT INTO `topic` VALUES (5,'MongoDB','MongoDB is ...','2018-01-30 12:31:03',1);
-
+    '''
 
 
 id를 기준으로 하여 부착하여 읽음
