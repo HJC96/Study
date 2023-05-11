@@ -17,15 +17,12 @@ public class Prompt {
             System.out.println("달을 입력하세요");
             System.out.print("MONTH> ");
             int month = scanner.nextInt();
-            System.out.println("첫번째 요일을 입력하세요.(su, mo, tu, we, th, fr, sa)");
-            System.out.print("WEEKDAY> ");
-            String day = scanner.next();
 
 
             if(month > 12 || month < 1){
                 continue;
             }
-            cal.printSampleCalendar(year, month, day);
+            cal.printSampleCalendar(year, month);
         }
         scanner.close();
     }
