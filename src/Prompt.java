@@ -46,13 +46,11 @@ public class Prompt {
         String date = s.next();
         String text = "";
         System.out.println("[일정을 입력해 주세요.(문장의 끝에 ;을 입력해주세요)]");
-        while(true){
-            String word = s.next();
-            text += word +" ";
-            if(word.endsWith(";")){
-                break;
-            }
+        String word;
+        while(!(word = s.next()).endsWith(";")){
+            text += word + " ";
         }
+        text += word.replace(";","");
         c.registerPlan(date, text);
     }
 
@@ -60,20 +58,19 @@ public class Prompt {
         System.out.println("[일정 검색]");
         System.out.println("[날짜를 입력해 주세요 (yyyy-mm-dd).]");
         String date = s.next();
-        String plan = "";
-        try {
-            plan = c.searchPlan(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            System.err.println("일정 검색 중 오류가 발생했습니다.");
+        PlanItem plan;
+        plan = c.searchPlan(date);
+        if(plan != null) {
+            System.out.println(plan.detail);
+        } else{
+            System.out.println("일정이 없습니다.");
         }
-        System.out.println(plan);
     }
 
     private void cmdCal(Scanner s, Calendar c) {
 
         while(true){
-            System.out.println("연도 입력하세요(exit: -1)");
+            System.out.println("연도 입력하세요.");
             System.out.print("YEAR> ");
             int year = s.nextInt();
             System.out.println("달을 입력하세요");

@@ -1,3 +1,4 @@
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,10 +9,28 @@ public class Calendar {
     private static final int[] maxDays      = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     private static final int[] LEAP_maxDays = {0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-    private HashMap<Date, String> planMap;
+    private static final String SAVE_FILE = "calendar.dat";
+    private HashMap<Date, PlanItem> planMap;
 
     public Calendar(){
-        planMap = new HashMap<Date, String>();
+        planMap = new HashMap<Date, PlanItem>();
+        File f = new File(SAVE_FILE);
+        if(!f.exists())
+            return;
+        try {
+            Scanner s = new Scanner(f);
+            while(s.hasNext()){
+                String line = s.nextLine();
+                String[] words = line.split(",");
+                String date = words[0];
+                String detail = words[1].replaceAll("\"","");
+                PlanItem p = new PlanItem(date, detail);
+                planMap.put(p.getDate(),p);
+            }
+            s.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
     public int getMaxDaysOfMonth(int year, int month){
         if(isLeapYear(year)) {
@@ -20,15 +39,24 @@ public class Calendar {
             return maxDays[month];
         }
     }
-    public void registerPlan(String strDate, String plan) throws ParseException {
-        Date date = new SimpleDateFormat("yyyy-mm-dd").parse(strDate);
-        System.out.println(date);
-        planMap.put(date,plan);
+    public void registerPlan(String strDate, String plan){
+        PlanItem p = new PlanItem(strDate, plan);
+        planMap.put(p.getDate(),p);
+
+        File f = new File(SAVE_FILE);
+        String item = p.saveString();
+        try {
+            FileWriter fw = new FileWriter(f, true);
+            fw.write(item);
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
-    public String searchPlan(String strDate) throws ParseException{
-        Date date = new SimpleDateFormat("yyyy-mm-dd").parse(strDate);
-        String plan = planMap.get(date);
-        return plan;
+    public PlanItem searchPlan(String strDate){
+        Date date = PlanItem.getDatefromString(strDate);
+        return planMap.get(date);
     }
 
     public boolean isLeapYear(int year){
@@ -76,10 +104,4 @@ public class Calendar {
         }
         System.out.println();
     }
-
-//    public static void main(String[] args) throws ParseException {
-//        Calendar cal = new Calendar();
-//        cal.registerPlan("2017-06-23", "Let's eat beef");
-//        System.out.println(cal.searchPlan("2017-06-23"));
-//    }
 }
