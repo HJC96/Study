@@ -16,16 +16,22 @@ public class Calendar {
     public static void  main(String[] args){
 
         // 숫자를 입력받아 해당하는 달의 최대 일수를 출력
+        String PROMPT ="cal> ";
         Scanner scanner = new Scanner(System.in);
         Calendar cal = new Calendar();
 
-        System.out.println("반복 횟수를 입력하세요.");
-        int loop = scanner.nextInt();
-        for(int i=0;i<loop;i++) {
+
+        while(true){
 
             System.out.println("달을 입력하세요");
+            System.out.print(PROMPT);
             int month = scanner.nextInt();
-
+            if(month == -1){
+                break;
+            }
+            if(month > 12){
+                continue;
+            }
             System.out.printf("%d 월은 %d일까지 있습니다.", month, cal.getMaxDaysOfMonth(month));
         }
         scanner.close();
