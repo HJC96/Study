@@ -1,7 +1,8 @@
 # What is DevOps?
 ### DevOps에 대해 많이 들어봤지만, 모호하여 개념을 정리하기 위함.
 
-DevOps
+# DevOps
+
 - 목적
   - 소프트웨어 개발 효율성 향상 
 - 개념
