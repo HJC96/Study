@@ -1,13 +1,13 @@
 SOLID
 
-SRP
+SRP(Single Responsibility Principle)
 - 개념
   - 단일 책임 원칙
 - 설명
   - 한 클래스는 하나의 책임만 가져야 한다. 
   - 하나의 책임이라는 범위가 모호하고, 변경이 있을 때 파급 효과가 적으면 단일 책임 원칙을 잘 따른 것
 
-**OCP**
+**OCP**(Open/Closed Principle)
 - 개념
   - 개방 폐쇄 원칙
  - 설명
@@ -18,7 +18,7 @@ SRP
       - 객체를 생성하고, 연관관계를 맺어주는 별도의 조립, 설정자가 필요
       - 이 역할을 spring이 해준다.
 
-LSP
+LSP(Liskov Substitution Principle)
 - 개념
   - 리스코프 치환 원칙
 - 설명
@@ -26,7 +26,7 @@ LSP
   - 예) 자동차 인터페이스의 엑셀은 앞으로 가라는 기능, 뒤로 가게 구현하면 LSP 위반
 
 
-ISP
+ISP(Interface Segregation Principle)
 - 개념
   - 인터페이스 분리 원칙
 - 설명
@@ -36,11 +36,11 @@ ISP
   - 인터페이스가 명확해지고, 대체 가능성이 높아진다.  
 
 
-**DIP**
+**DIP**(Dependency Inversion Principle)
 - 개념
   - 의존관계 역전 원칙
 - 설명
-  - 프로그래머는 구현 클래스에 의존하지 말고, 인터페이스에 의존해야한다. 
+  - 프로그래머는 구현 클래스에 의존하지 말고, 인터페이스에 의존해야한다.
 
 
 참고: https://www.inflearn.com/course/%EC%8A%A4%ED%94%84%EB%A7%81-%ED%95%B5%EC%8B%AC-%EC%9B%90%EB%A6%AC-%EA%B8%B0%EB%B3%B8%ED%8E%B8/dashboard
