@@ -10,7 +10,11 @@ MySQL 시작
     cd /usr/local/mysql/bin 
     ./mysql -uroot -p
 ~~~
-
+혹은
+~~~mysql
+    cd /opt/homebrew/Cellar/mariadb/10.11.3/bin
+    ./mariadb
+~~~
 
 스키마(DB) 만들기 
 ~~~mysql
