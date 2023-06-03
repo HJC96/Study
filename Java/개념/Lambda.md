@@ -1,4 +1,4 @@
-### 람다식(Lambda expression)
+## 람다식(Lambda expression)
 
 ### 람다식
   - 개념
