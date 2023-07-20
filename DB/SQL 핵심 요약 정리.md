@@ -142,6 +142,12 @@ DB 사용
     DELETE FROM topic WHERE id = 5;
 ~~~
 
+CLA
+- COALESCE <- NULL이 아닌 값을 반환하는 함수
+- 아래 예제에서는 nickname이 NULL이 아니면 nickname을, NULL이면 name을 반환한다.
+~~~mysql
+    SELECT COALESCE(nickname, name) AS 'username' FROM users;
+~~~
 
 JOIN 예제
 
