@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-07-23T10:02:16.252Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" etag="B1lbRoPeEHUC7HcmK9Xq" version="21.2.9" type="github">
+<mxfile host="app.diagrams.net" modified="2023-07-23T10:58:55.545Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" etag="OGk1UFoD7RIgBi0Q_O2n" version="21.2.9" type="github">
   <diagram name="페이지-1" id="KOJUU7Jg7iE1d3swBxz0">
     <mxGraphModel dx="1644" dy="2077" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -143,7 +143,19 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="d41BM-Q_3s56RhrBIzpa-48" value="오류 해결 -&amp;gt; Web Config 설정이 Spring Security와 겹쳤다." style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="850" y="370" width="210" height="80" as="geometry" />
+          <mxGeometry x="930" y="900" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d41BM-Q_3s56RhrBIzpa-51" value="해야할것" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="1200" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d41BM-Q_3s56RhrBIzpa-52" value="Notion에 JWT 관련 정리하기" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="1300" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d41BM-Q_3s56RhrBIzpa-53" value="새로운 기능 추가하기" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1300" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d41BM-Q_3s56RhrBIzpa-54" value="도대체 어떤 우선순위로 해야할까? 어떻게 의사결정을 해야할까?" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="1220" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
