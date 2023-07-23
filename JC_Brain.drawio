@@ -1,9 +1,171 @@
-<mxfile host="app.diagrams.net" modified="2023-07-23T13:24:53.161Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" version="21.2.9" etag="I291SzZsXNfJ_gVn1UrM" type="github">
+<mxfile host="app.diagrams.net" modified="2023-07-23T13:25:29.211Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" etag="mihVzN1CBrmEzO8uO2Jq" version="21.2.9" type="github">
   <diagram name="페이지-1" id="kzblMoXYZj9K_MLetJkw">
-    <mxGraphModel>
+    <mxGraphModel dx="2954" dy="2666" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="Ny9B26W0ia246MtTpUC2-1" value="FakeStore" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="180" y="495" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-2" value="현재 내 감정을 적어보자면 너무 무기력하다.&lt;br&gt;프로젝트 진도도 안나가고, 그냥 너무 지친다.&lt;br&gt;아무것도 하고 싶지 않다.&lt;br&gt;&lt;br&gt;&lt;br&gt;동기 부여도 되지 않고 그냥 번아웃이 온 것 같다.&lt;br&gt;해쳐나가야 하는데,&amp;nbsp;이런 상황을 어떻게 해쳐나갈 수 있을까?&lt;br&gt;&lt;br&gt;조금 더 구체적인 계획을 세워보면 괜찮으려나?&lt;br&gt;&lt;br&gt;&lt;br&gt;계획을 어떻게 세울지부터 (chatgpt)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="285" y="-12" width="310" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-3" value="포트폴리오" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="245" y="405" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-4" value="추가해야할 기능" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="130" y="594" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-5" value="Cart, jwt, CORS" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="685" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-6" value="시즌은 9월부터.&lt;br&gt;..&lt;br&gt;&lt;br&gt;시간 문제" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="660" y="290" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-7" value="감정적 스트레스&lt;br&gt;이직을 못하면 어떡하지 이런거.." style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="515" y="200" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-8" value="그외 다른 팀프로젝트는?" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="495" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-9" value="지금까지 했던것 정리는" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="294" y="495" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-10" value="코테는..?" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="405" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-11" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-3" target="Ny9B26W0ia246MtTpUC2-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="195" y="455" as="sourcePoint" />
+            <mxPoint x="245" y="405" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-12" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-3" target="Ny9B26W0ia246MtTpUC2-9">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="284" y="485" as="sourcePoint" />
+            <mxPoint x="257" y="515" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-13" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-3" target="Ny9B26W0ia246MtTpUC2-8">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="294" y="495" as="sourcePoint" />
+            <mxPoint x="267" y="525" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-14" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-1" target="Ny9B26W0ia246MtTpUC2-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="575" as="sourcePoint" />
+            <mxPoint x="330" y="525" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-15" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-4" target="Ny9B26W0ia246MtTpUC2-5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="194" y="665" as="sourcePoint" />
+            <mxPoint x="180" y="692" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-16" value="이직" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="200" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-17" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-16" target="Ny9B26W0ia246MtTpUC2-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="800" y="490" as="sourcePoint" />
+            <mxPoint x="850" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-18" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-16" target="Ny9B26W0ia246MtTpUC2-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="426" y="282" as="sourcePoint" />
+            <mxPoint x="319" y="423" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-19" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-16" target="Ny9B26W0ia246MtTpUC2-7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="800" y="490" as="sourcePoint" />
+            <mxPoint x="850" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-20" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.057;entryY=0.233;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-7" target="Ny9B26W0ia246MtTpUC2-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="800" y="490" as="sourcePoint" />
+            <mxPoint x="850" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-21" value="CORS 오류 해결" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="40" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-22" value="실행 방법&lt;br&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="960" y="148" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-23" value="npm run dev" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="250" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-24" value="intellij 서버 가동" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="250" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-25" value="일단 최대한 나머지 기능 추가해서 하나의 프로젝트는 만들고 싶음..&lt;br&gt;-&amp;gt; 포폴용으로 만들어서 어디 하나 집어 넣어보자&lt;br&gt;&lt;br&gt;이거 일정을 어떻게 짜면 좋을까?" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="220" y="860" width="340" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-26" value="일정 수립" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="325" y="940" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-27" value="" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="210" y="1050" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-28" value="디버깅 메시지" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="150" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-29" value="로그인/회원 가입 시도시, intellij에는&amp;nbsp;Reject: headers &#39;[content-type]&#39; are not allowed가 뜸.&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="990" y="-110" width="480" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-30" value="2023-07-23 12:14:48.164 DEBUG 47812 --- [io-8080-exec-11] o.s.web.cors.DefaultCorsProcessor&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; : Reject: headers &#39;[content-type]&#39; are not allowed" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1390" y="330" width="240" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-31" value="서버측" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="230" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-32" value="클라이언트 측" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1201" y="240" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-33" value="&lt;ol style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; font-family: menlo, monospace; font-size: 11px; padding: 0px; margin: 0px; z-index: 0; position: relative; color: var(--color-text-primary); display: flex; flex-direction: column; list-style-type: none; text-align: start;&quot; tabindex=&quot;-1&quot; role=&quot;tree&quot; class=&quot;tree-outline hide-selection-when-blurred source-code object-properties-section&quot;&gt;&lt;li style=&quot;box-sizing: border-box; min-width: 0px; min-height: 16px; display: flex; flex-direction: row; text-overflow: ellipsis; position: relative; align-items: center; user-select: text;&quot; aria-expanded=&quot;true&quot; class=&quot;parent object-properties-section-root-element expanded&quot; role=&quot;treeitem&quot; title=&quot;&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; class=&quot;object-properties-preview&quot;&gt;{&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;message&lt;/span&gt;: &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; unicode-bidi: -webkit-isolate; color: var(--color-syntax-1); word-break: break-all;&quot; class=&quot;object-value-string&quot;&gt;&#39;Network Error&#39;&lt;/span&gt;, &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;name&lt;/span&gt;: &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; unicode-bidi: -webkit-isolate; color: var(--color-syntax-1); word-break: break-all;&quot; class=&quot;object-value-string&quot;&gt;&#39;AxiosError&#39;&lt;/span&gt;, &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;code&lt;/span&gt;: &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; unicode-bidi: -webkit-isolate; color: var(--color-syntax-1); word-break: break-all;&quot; class=&quot;object-value-string&quot;&gt;&#39;ERR_NETWORK&#39;&lt;/span&gt;, &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;config&lt;/span&gt;: &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; title=&quot;Object&quot; class=&quot;object-value-object&quot;&gt;{…}&lt;/span&gt;, &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;request&lt;/span&gt;: &lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; title=&quot;XMLHttpRequest&quot; class=&quot;object-value-object&quot;&gt;XMLHttpRequest&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot;&gt;,&amp;nbsp;…&lt;/span&gt;}&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; class=&quot;object-description&quot;&gt;AxiosError&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; overflow-wrap: break-word; font-style: italic; word-break: break-all;&quot; tabindex=&quot;-1&quot; class=&quot;console-object console-object-preview&quot;&gt;&lt;/span&gt;&lt;/li&gt;&lt;ol style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; list-style-type: none; padding-left: 12px;&quot; role=&quot;group&quot; class=&quot;children expanded&quot;&gt;&lt;li style=&quot;box-sizing: border-box; min-width: 0px; min-height: 16px; text-overflow: ellipsis; position: relative; display: flex; align-items: center; user-select: text;&quot; data-object-property-name-for-test=&quot;code&quot; role=&quot;treeitem&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; overflow: hidden; line-height: 16px; display: flex;&quot; class=&quot;name-and-value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-syntax-2); flex-shrink: 0; font-weight: bold;&quot; title=&quot;code&quot; class=&quot;name own-property&quot;&gt;code&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; flex-shrink: 0;&quot; class=&quot;separator&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; unicode-bidi: -webkit-isolate; color: var(--color-syntax-1);&quot; title=&quot;ERR_NETWORK&quot; class=&quot;object-value-string value&quot;&gt;&quot;ERR_NETWORK&quot;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot;box-sizing: border-box; min-width: 0px; min-height: 16px; text-overflow: ellipsis; position: relative; display: flex; align-items: center; user-select: text;&quot; aria-expanded=&quot;false&quot; class=&quot;parent&quot; data-object-property-name-for-test=&quot;config&quot; role=&quot;treeitem&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; overflow: hidden; line-height: 16px; display: flex;&quot; class=&quot;name-and-value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-syntax-2); flex-shrink: 0; font-weight: bold;&quot; title=&quot;config&quot; class=&quot;name own-property&quot;&gt;config&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; flex-shrink: 0;&quot; class=&quot;separator&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; title=&quot;Object&quot; class=&quot;object-value-object value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; class=&quot;object-properties-preview&quot;&gt;{&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;transitional&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; title=&quot;Object&quot; class=&quot;object-value-object&quot;&gt;{…}&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;adapter&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; class=&quot;object-value-array&quot;&gt;Array(2)&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;transformRequest&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; class=&quot;object-value-array&quot;&gt;Array(1)&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;transformResponse&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; class=&quot;object-value-array&quot;&gt;Array(1)&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;timeout&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--override-primitive-dark-mode-color); --override-primitive-dark-mode-color: hsl(252deg 100% 75%);&quot; class=&quot;object-value-number&quot;&gt;0&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot;&gt;,&amp;nbsp;…&lt;/span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot;box-sizing: border-box; min-width: 0px; min-height: 16px; text-overflow: ellipsis; position: relative; display: flex; align-items: center; user-select: text;&quot; data-object-property-name-for-test=&quot;message&quot; role=&quot;treeitem&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; overflow: hidden; line-height: 16px; display: flex;&quot; class=&quot;name-and-value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-syntax-2); flex-shrink: 0; font-weight: bold;&quot; title=&quot;message&quot; class=&quot;name own-property&quot;&gt;message&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; flex-shrink: 0;&quot; class=&quot;separator&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; unicode-bidi: -webkit-isolate; color: var(--color-syntax-1);&quot; title=&quot;Network Error&quot; class=&quot;object-value-string value&quot;&gt;&quot;Network Error&quot;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot;box-sizing: border-box; min-width: 0px; min-height: 16px; text-overflow: ellipsis; position: relative; display: flex; align-items: center; user-select: text;&quot; data-object-property-name-for-test=&quot;name&quot; role=&quot;treeitem&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; overflow: hidden; line-height: 16px; display: flex;&quot; class=&quot;name-and-value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-syntax-2); flex-shrink: 0; font-weight: bold;&quot; title=&quot;name&quot; class=&quot;name own-property&quot;&gt;name&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; flex-shrink: 0;&quot; class=&quot;separator&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; unicode-bidi: -webkit-isolate; color: var(--color-syntax-1);&quot; title=&quot;AxiosError&quot; class=&quot;object-value-string value&quot;&gt;&quot;AxiosError&quot;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot;box-sizing: border-box; min-width: 0px; min-height: 16px; text-overflow: ellipsis; position: relative; display: flex; align-items: center; user-select: text;&quot; aria-expanded=&quot;false&quot; class=&quot;parent&quot; data-object-property-name-for-test=&quot;request&quot; role=&quot;treeitem&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; overflow: hidden; line-height: 16px; display: flex;&quot; class=&quot;name-and-value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-syntax-2); flex-shrink: 0; font-weight: bold;&quot; title=&quot;request&quot; class=&quot;name own-property&quot;&gt;request&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; flex-shrink: 0;&quot; class=&quot;separator&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; title=&quot;XMLHttpRequest&quot; class=&quot;object-value-object value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary);&quot; class=&quot;object-description&quot;&gt;XMLHttpRequest&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; class=&quot;object-properties-preview&quot;&gt;{&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;onreadystatechange&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-disabled);&quot; class=&quot;object-value-null&quot;&gt;null&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;readyState&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--override-primitive-dark-mode-color); --override-primitive-dark-mode-color: hsl(252deg 100% 75%);&quot; class=&quot;object-value-number&quot;&gt;4&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;timeout&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--override-primitive-dark-mode-color); --override-primitive-dark-mode-color: hsl(252deg 100% 75%);&quot; class=&quot;object-value-number&quot;&gt;0&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;withCredentials&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--override-primitive-dark-mode-color); --override-primitive-dark-mode-color: hsl(252deg 100% 75%);&quot; class=&quot;object-value-boolean&quot;&gt;false&lt;/span&gt;,&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; class=&quot;name&quot;&gt;upload&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; title=&quot;XMLHttpRequestUpload&quot; class=&quot;object-value-object&quot;&gt;XMLHttpRequestUpload&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot;&gt;,&amp;nbsp;…&lt;/span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot;box-sizing: border-box; min-width: 0px; min-height: 16px; text-overflow: ellipsis; position: relative; display: flex; align-items: center; user-select: text;&quot; data-object-property-name-for-test=&quot;stack&quot; role=&quot;treeitem&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; overflow: hidden; line-height: 16px; display: flex;&quot; class=&quot;name-and-value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-syntax-2); flex-shrink: 0; opacity: 0.6; font-weight: bold;&quot; title=&quot;stack&quot; class=&quot;name object-properties-section-dimmed own-property&quot;&gt;stack&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; flex-shrink: 0;&quot; class=&quot;separator&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; unicode-bidi: -webkit-isolate; color: var(--color-syntax-1);&quot; title=&quot;AxiosError: Network Error&lt;br/&gt;    at XMLHttpRequest.handleError (webpack-internal:///./node_modules/axios/lib/adapters/xhr.js:168:14)&quot; class=&quot;object-value-string value&quot;&gt;&quot;AxiosError: Network Error\n    at XMLHttpRequest.handleError (webpack-internal:///./node_modules/axios/lib/adapters/xhr.js:168:14)&quot;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot;box-sizing: border-box; min-width: 0px; min-height: 16px; outline-width: 0px; text-overflow: ellipsis; position: relative; display: flex; align-items: center; user-select: text;&quot; aria-selected=&quot;true&quot; tabindex=&quot;-1&quot; aria-expanded=&quot;false&quot; class=&quot;parent selected&quot; data-object-property-name-for-test=&quot;[[Prototype]]&quot; role=&quot;treeitem&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; overflow: hidden; line-height: 16px; display: flex;&quot; class=&quot;name-and-value&quot;&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; color: var(--color-text-secondary); flex-shrink: 0;&quot; title=&quot;[[Prototype]]&quot; class=&quot;name synthetic-property&quot;&gt;[[Prototype]]&lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px; flex-shrink: 0;&quot; class=&quot;separator&quot;&gt;: &lt;/span&gt;&lt;span style=&quot;box-sizing: border-box; min-width: 0px; min-height: 0px;&quot; title=&quot;Error&quot; class=&quot;object-value-object value&quot;&gt;Error&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/ol&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="485" width="160" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-34" value="webconfig말고 다른 config도 확인해보자." style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1170" y="670" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-35" value="이거였음" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="770" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-36" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.038;exitY=0.823;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="Ny9B26W0ia246MtTpUC2-34" target="Ny9B26W0ia246MtTpUC2-35">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1210" y="610" as="sourcePoint" />
+            <mxPoint x="1260" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-37" value="오류 해결 -&amp;gt; Web Config 설정이 Spring Security와 겹쳤다." style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="930" y="900" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-38" value="해야할것" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="1200" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-39" value="Notion에 JWT 관련 정리하기" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="1300" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-40" value="새로운 기능 추가하기" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="1300" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-41" value="도대체 어떤 우선순위로 해야할까? 어떻게 의사결정을 해야할까?&lt;br&gt;&lt;br&gt;일단 해야할 일들을 리스트업 해보자.&lt;br&gt;-&amp;gt; 객관적으로 나열해보고 이를 통해 계획을 세우는 거야.&lt;br&gt;&lt;br&gt;&lt;br&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="1220" width="430" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-42" value="d" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontColor=#000000;darkOpacity=0.05;fillColor=#FFF9B2;strokeColor=none;fillStyle=solid;direction=west;gradientDirection=north;gradientColor=#FFF2A1;shadow=1;size=20;pointerEvents=1;" vertex="1" parent="1">
+          <mxGeometry x="1710" y="1360" width="140" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-43" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="820" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Ny9B26W0ia246MtTpUC2-44" value="sd" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1750" y="920" width="60" height="30" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
