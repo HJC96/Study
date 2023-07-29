@@ -5,7 +5,7 @@
 
 # MySQL Command
 
-MySQL 시작
+## MySQL 시작
 ~~~mysql
     cd /usr/local/mysql/bin 
     ./mysql -uroot -p
@@ -16,33 +16,31 @@ MySQL 시작
     ./mariadb
 ~~~
 
-스키마(DB) 만들기 
+## 스키마(DB) 만들기 
 ~~~mysql
     CREATE DATABASE Tutorials;
 ~~~
  
 
-DB 삭제 <- 조심
+## DB 삭제 <- 조심
 ~~~mysql
     DROP DATABASE Tutorials;
 ~~~
 
 
-DB 보기
+## DB 보기
 ~~~mysql
     SHOW DATABASES;
 ~~~
 
 
-DB 사용
+## DB 사용
 ~~~mysql
     USE Tutorials;
 ~~~
 
 
-테이블 만들기
-
-
+## 테이블 만들기
 ~~~mysql
     CREATE TABLE topic(
       id INT(11) NOT NULL AUTO_INCREMENT,
@@ -53,14 +51,12 @@ DB 사용
       profile VARCHAR(200) NULL, PRIMARY KEY(id));
 ~~~
 
-
-테이블 삭제
+## 테이블 삭제
 ~~~mysql
     DROP TABLE topic;
 ~~~
 
-
-테이블 구조 참조
+## 테이블 구조 참조
 ~~~mysql
     DESC topic;
 ~~~
@@ -71,100 +67,74 @@ DB 사용
     INSERT INTO topic(title,description,created,author,profile) VALUES('MySQL','MySQL is ...',NOW(),'JC','developer')
 ~~~
 
-
-데이터 읽기(1)
+## 데이터 읽기(1)
 ~~~mysql
     SELECT * FROM topic; 
 ~~~
 
-
-
-데이터 읽기(2)
+## 데이터 읽기(2)
 ~~~mysql
     SELECT id,title,created,author FROM topic; 
 ~~~
 
-
-
-
-데이터 읽기(3)
+## 데이터 읽기(3)
 ~~~mysql
     SELECT "JC" FROM topic; 
 ~~~
 
-
-
-
-데이터 읽기(4)
+## 데이터 읽기(4)
 ~~~mysql
     SELECT "JC",1+1; 
 ~~~
 
-
-
-
-데이터 읽기(5)
+## 데이터 읽기(5)
 ~~~mysql
     SELECT id,title,created,author FROM topic WHERE author='JC'; 
 ~~~
 
-
-
-
-데이터 읽기(6)
+## 데이터 읽기(6)
 ~~~mysql
     SELECT id,title,created,author FROM topic WHERE author='JC'
     ORDER BY id DESC;
 ~~~
 
-
-
-
-데이터 읽기(7)
+## 데이터 읽기(7)
 ~~~mysql
     SELECT id,title,created,author FROM topic WHERE author='JC'
     ORDER BY id DESC LIMIT 2;
 ~~~
 
-
-
-
-데이터 업데이트
+## 데이터 업데이트
 ~~~mysql
     UPDATE topic SET description='AAAAAAA', title='AAAAAA' WHERE id=2;
 ~~~
 
 
-
-
-데이터 삭제 <- where을 넣어주지 않으면 재앙이 일어난다… 모든 행이 삭제됨.
+## 데이터 삭제 <- where을 넣어주지 않으면 재앙이 일어난다… 모든 행이 삭제됨.
 ~~~mysql
     DELETE FROM topic WHERE id = 5;
 ~~~
 
-COALESCE
+## COALESCE
 - COALESCE <- NULL이 아닌 값을 반환하는 함수
 - 아래 예제에서는 nickname이 NULL이 아니면 nickname을, NULL이면 name을 반환한다.
 ~~~mysql
     SELECT COALESCE(nickname, name) AS 'username' FROM users;
 ~~~
 
-JOIN 예제
-
+## JOIN 예제
 - 독립적이고, 분리된 테이블을 하나의 테이블로 읽을 수 있다.
 - 예제 테이블   
 ~~~mysql
 structure for table `author`
 --
- 
- 
+
 CREATE TABLE `author` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `profile` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) 
- 
+)  
 --
 -- Dumping data for table `author`
 --
@@ -196,11 +166,8 @@ INSERT INTO `topic` VALUES (3,'SQL Server','SQL Server is ...','2018-01-20 11:01
 INSERT INTO `topic` VALUES (4,'PostgreSQL','PostgreSQL is ...','2018-01-23 01:03:03',3);
 INSERT INTO `topic` VALUES (5,'MongoDB','MongoDB is ...','2018-01-30 12:31:03',1);
 ~~~
-## LEFT JOIN
-id를 기준으로 하여 부착하여 읽음
-~~~mysql
-    SELECT * FROM topic LEFT JOIN author ON topic.author_id = author.id;
-~~~
+
+### LEFT JOIN
 → 기본적으로 왼쪽 테이블을 모두 가져온다.
 → 오른쪽 테이블에 있는 조건들을 가져온다.
 → 만약 오른쪽 테이블에 있는 조건이 없을시 NULL로 표기.
@@ -242,13 +209,13 @@ CUSTOMER_ID | CUSTOMER_NAME | ORDER_ID | ORDER_DATE
 ```
 
 
-id, title, description, created, name, profile의 정보로 필터하여 읽음
+## id, title, description, created, name, profile의 정보로 필터하여 읽음
 ~~~mysql
     SELECT topic.id,title,description,created,name,profile FROM topic LEFT JOIN author ON topic.author_id = author.id;
 ~~~
 
 
-위 커맨드에서 id를 t_id로 바꾸어 읽는 기능
+## 위 커맨드에서 id를 t_id로 바꾸어 읽는 기능
 ~~~mysql
     SELECT topic.id AS t_id ,title,description,created,name,profile FROM topic LEFT JOIN author ON topic.author_id = author.id;
 ~~~
