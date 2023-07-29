@@ -168,10 +168,10 @@ INSERT INTO `topic` VALUES (5,'MongoDB','MongoDB is ...','2018-01-30 12:31:03',1
 ~~~
 
 ### LEFT JOIN
-→ 기본적으로 왼쪽 테이블을 모두 가져온다.
-→ 오른쪽 테이블에 있는 조건들을 가져온다.
-→ 만약 오른쪽 테이블에 있는 조건이 없을시 NULL로 표기.
-→ “왼쪽 테이블에 오른쪽 테이블을 붙인다”로 생각하면 될듯.
+- 기본적으로 왼쪽 테이블을 모두 가져온다.
+- 오른쪽 테이블에 있는 조건들을 가져온다.
+- 만약 오른쪽 테이블에 있는 조건이 없을시 NULL로 표기.
+- “왼쪽 테이블에 오른쪽 테이블을 붙인다”로 생각하면 될듯.
 
 **CUSTOMERS 테이블**
 
@@ -209,13 +209,13 @@ CUSTOMER_ID | CUSTOMER_NAME | ORDER_ID | ORDER_DATE
 ```
 
 
-## id, title, description, created, name, profile의 정보로 필터하여 읽음
+### id, title, description, created, name, profile의 정보로 필터하여 읽음
 ~~~mysql
     SELECT topic.id,title,description,created,name,profile FROM topic LEFT JOIN author ON topic.author_id = author.id;
 ~~~
 
 
-## 위 커맨드에서 id를 t_id로 바꾸어 읽는 기능
+### 위 커맨드에서 id를 t_id로 바꾸어 읽는 기능
 ~~~mysql
     SELECT topic.id AS t_id ,title,description,created,name,profile FROM topic LEFT JOIN author ON topic.author_id = author.id;
 ~~~
