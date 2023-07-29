@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-07-29T07:56:42.401Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36" etag="4wRnd2URAfnFaiRj1X6z" version="21.6.6" type="github">
+<mxfile host="app.diagrams.net" modified="2023-07-29T07:59:09.395Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36" etag="35mU5xIZs8aEFQ8IHLIE" version="21.6.6" type="github">
   <diagram name="페이지-1" id="Fbz31L2CTwGyDwPbKBJx">
-    <mxGraphModel dx="964" dy="514" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1791" dy="514" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -40,6 +40,9 @@
         <mxCell id="JBgTJfaiiA_D_RjS3cp3-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="JBgTJfaiiA_D_RjS3cp3-10" target="JBgTJfaiiA_D_RjS3cp3-4">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="JBgTJfaiiA_D_RjS3cp3-10" target="JBgTJfaiiA_D_RjS3cp3-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="JBgTJfaiiA_D_RjS3cp3-10" value="Token" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="300" width="80" height="80" as="geometry" />
         </mxCell>
@@ -62,6 +65,31 @@
         </mxCell>
         <mxCell id="JBgTJfaiiA_D_RjS3cp3-19" value="배경지식" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="560" y="380" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="JBgTJfaiiA_D_RjS3cp3-22" target="JBgTJfaiiA_D_RjS3cp3-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="JBgTJfaiiA_D_RjS3cp3-22" target="JBgTJfaiiA_D_RjS3cp3-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="JBgTJfaiiA_D_RjS3cp3-22" target="JBgTJfaiiA_D_RjS3cp3-26">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="528" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-22" value="Architecture" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-24" value="Header" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-40" y="640" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-25" value="PayLoad" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="640" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-26" value="Verify Signiture" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="640" width="80" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
