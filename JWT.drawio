@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-07-29T07:59:09.395Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36" etag="35mU5xIZs8aEFQ8IHLIE" version="21.6.6" type="github">
+<mxfile host="app.diagrams.net" modified="2023-07-29T08:01:05.580Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36" etag="8DVqlmMonHv9_f18xaxu" version="21.6.6" type="github">
   <diagram name="페이지-1" id="Fbz31L2CTwGyDwPbKBJx">
     <mxGraphModel dx="1791" dy="514" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -32,7 +32,7 @@
           <mxGeometry x="530" y="220" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="JBgTJfaiiA_D_RjS3cp3-9" value="Bearer" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="500" y="610" width="80" height="80" as="geometry" />
+          <mxGeometry x="460" y="680" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="JBgTJfaiiA_D_RjS3cp3-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="JBgTJfaiiA_D_RjS3cp3-10" target="JBgTJfaiiA_D_RjS3cp3-3">
           <mxGeometry relative="1" as="geometry" />
@@ -46,11 +46,11 @@
         <mxCell id="JBgTJfaiiA_D_RjS3cp3-10" value="Token" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="40" y="300" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="JBgTJfaiiA_D_RjS3cp3-15" value="인증" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-15" value="인증(Authentification)" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="470" y="490" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="JBgTJfaiiA_D_RjS3cp3-16" value="인가" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="630" y="490" width="80" height="80" as="geometry" />
+        <mxCell id="JBgTJfaiiA_D_RjS3cp3-16" value="인가&lt;br&gt;(Authorization)" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="631" y="490" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="JBgTJfaiiA_D_RjS3cp3-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="JBgTJfaiiA_D_RjS3cp3-19" target="JBgTJfaiiA_D_RjS3cp3-15">
           <mxGeometry relative="1" as="geometry" />
