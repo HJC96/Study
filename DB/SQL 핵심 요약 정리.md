@@ -196,10 +196,50 @@ INSERT INTO `topic` VALUES (3,'SQL Server','SQL Server is ...','2018-01-20 11:01
 INSERT INTO `topic` VALUES (4,'PostgreSQL','PostgreSQL is ...','2018-01-23 01:03:03',3);
 INSERT INTO `topic` VALUES (5,'MongoDB','MongoDB is ...','2018-01-30 12:31:03',1);
 ~~~
+## LEFT JOIN
 id를 기준으로 하여 부착하여 읽음
 ~~~mysql
     SELECT * FROM topic LEFT JOIN author ON topic.author_id = author.id;
 ~~~
+→ 기본적으로 왼쪽 테이블을 모두 가져온다.
+→ 오른쪽 테이블에 있는 조건들을 가져온다.
+→ 만약 오른쪽 테이블에 있는 조건이 없을시 NULL로 표기.
+→ “왼쪽 테이블에 오른쪽 테이블을 붙인다”로 생각하면 될듯.
+
+**CUSTOMERS 테이블**
+
+```java
+CUSTOMER_ID | CUSTOMER_NAME
+1           | John
+2           | Sarah
+3           | Mike
+```
+
+**ORDERS 테이블**
+
+```java
+ORDER_ID | CUSTOMER_ID | ORDER_DATE
+101      | 2           | 2023-07-01
+102      | 1           | 2023-07-05
+```
+
+**LEFT JOIN을 사용한 쿼리**
+
+```java
+SELECT CUSTOMERS.CUSTOMER_ID, CUSTOMERS.CUSTOMER_NAME, ORDERS.ORDER_ID, ORDERS.ORDER_DATE
+FROM CUSTOMERS
+LEFT JOIN ORDERS
+ON CUSTOMERS.CUSTOMER_ID = ORDERS.CUSTOMER_ID;
+```
+
+**결과**
+
+```java
+CUSTOMER_ID | CUSTOMER_NAME | ORDER_ID | ORDER_DATE
+1           | John          | 102      | 2023-07-05
+2           | Sarah         | 101      | 2023-07-01
+3           | Mike          | NULL     | NULL
+```
 
 
 id, title, description, created, name, profile의 정보로 필터하여 읽음
