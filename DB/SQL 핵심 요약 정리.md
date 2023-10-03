@@ -2,7 +2,6 @@
 # SQL
 
 - Structured Query Language
-
 # MySQL Command
 
 ## MySQL 시작
