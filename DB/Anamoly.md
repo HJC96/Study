@@ -84,3 +84,6 @@
 - 여러개의 속성이 결합하여 하나의 속성을 형성
 	- 예를들어, '이름'이라는 복합송성은 '성'과 '이름'으로 나눌 수 있다
 - 열이 늘어남
+
+강의: RDBMS Modeling 기초
+출처: https://www.inflearn.com/course/%EA%B4%80%EA%B3%84%ED%98%95%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4-rdbms/dashboard
