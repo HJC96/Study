@@ -140,6 +140,20 @@ WHERE column_name IN ('value1', 'value2', ...);
 SELECT IFNULL(column_name, 'Default Value') FROM table_name;
 ~~~
 
+## DATE_FORMAT
+### 형식 지정자 예시
+%Y: 4자리 연도 (예: 2021)
+%y: 2자리 연도 (예: 21)
+%m: 2자리 월 (01 ~ 12)
+%d: 2자리 일 (01 ~ 31)
+%H: 24시간 형식의 시 (00 ~ 23)
+%h: 12시간 형식의 시 (01 ~ 12)
+%i: 분 (00 ~ 59)
+%s: 초 (00 ~ 59)
+~~~sql
+SELECT DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s');
+~~~
+
 ## JOIN 예제
 - 독립적이고, 분리된 테이블을 하나의 테이블로 읽을 수 있다.
 - 예제 테이블   
