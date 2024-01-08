@@ -121,6 +121,18 @@
     SELECT COALESCE(nickname, name) AS 'username' FROM users;
 ~~~
 
+## IN
+- IN 연산자는 SQL에서 주어진 값 목록 중 하나와 일치하는지 확인하는 데 사용됨- 기본 구문은 column_name IN (value1, value2, ...) 형태
+- 이 연산자는 특정 열이 제공된 값 중 하나와 일치할 때 참을 반환
+- IN은 복수의 OR 조건을 간결하고 효율적으로 표현하는 데 유용. 
+- 예를 들어, column_name = value1 OR column_name = value2 OR ...와 같은 조건을 column_name IN (value1, value2, ...)로 간단하게 표현 가능
+~~~sql
+SELECT *
+FROM your_table
+WHERE column_name IN ('value1', 'value2', ...);
+~~~
+
+
 ## JOIN 예제
 - 독립적이고, 분리된 테이블을 하나의 테이블로 읽을 수 있다.
 - 예제 테이블   
