@@ -132,6 +132,13 @@ FROM your_table
 WHERE column_name IN ('value1', 'value2', ...);
 ~~~
 
+## IFNULL
+- IFNULL 함수는 두 개의 인자를 받아, 첫 번째 인자가 NULL인 경우 두 번째 인자
+    의 값을 반환
+- 첫 번째 인자가 NULL이 아니면 첫 번째 인자의 값을 그대로 반환
+~~~sql
+SELECT IFNULL(column_name, 'Default Value') FROM table_name;
+~~~
 
 ## JOIN 예제
 - 독립적이고, 분리된 테이블을 하나의 테이블로 읽을 수 있다.
