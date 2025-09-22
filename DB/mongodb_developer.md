@@ -932,4 +932,97 @@ db.movies.aggregate( { $group: { _id: '$rated', count: { $sum: 1 } } } )
 ```
 
 
+네, 알겠습니다. 고유 인덱스와 비고유 인덱스의 차이점을 명확하게 보여주는 예시를 제공해 드리겠습니다.
+
+-----
+
+## 53\. 추가 개념: 고유 인덱스 vs. 비고유 인덱스 (Unique vs. Non-Unique Index)
+
+### 문제
+
+MongoDB에서 고유 인덱스(unique index)와 비고유 인덱스(non-unique index)의 차이점은 무엇입니까?
+
+### 출제자 의도
+
+> 쿼리 성능 향상이라는 공통된 목적 외에, 데이터의 무결성을 강제하는 고유 인덱스와 중복을 허용하는 비고유 인덱스의 근본적인 차이점을 이해하고 있는지 평가합니다.
+
+### 정답
+
+고유 인덱스는 인덱싱된 필드에 대해 고유성 제약 조건을 강제하는 반면, 비고유 인덱스는 인덱싱된 필드에 여러 문서가 동일한 값을 갖도록 허용합니다.
+
+**해설:**
+MongoDB의 고유 인덱스는 인덱싱된 필드의 모든 값이 컬렉션의 문서 전체에서 고유함을 보장합니다. 반면에 비고유 인덱스는 이러한 제약 조건을 강제하지 않으므로 인덱싱된 필드에 중복된 값을 허용합니다.
+
+### **예시로 보는 차이점**
+
+간단한 `employees` 컬렉션을 예로 들어 두 인덱스의 동작을 비교해 보겠습니다.
+
+-----
+
+### 1\. 비고유 인덱스 (Non-Unique Index) - **중복 허용**
+
+**상황:** 직원들의 부서(`department`)를 기준으로 검색하는 경우가 많아, 이 필드에 인덱스를 생성하려고 합니다. 여러 직원이 같은 부서에 있을 수 있으므로 비고유 인덱스가 적합합니다.
+
+**인덱스 생성:**
+
+```javascript
+// 'department' 필드에 비고유 인덱스를 생성합니다.
+db.employees.createIndex({ department: 1 })
+```
+
+**데이터 삽입:**
+
+```javascript
+db.employees.insertOne({ name: "Alice", department: "Sales" })
+// 성공적으로 삽입됩니다.
+
+db.employees.insertOne({ name: "Bob", department: "Marketing" })
+// 성공적으로 삽입됩니다.
+
+db.employees.insertOne({ name: "Charlie", department: "Sales" })
+// "Sales"는 이미 존재하지만, 비고유 인덱스이므로 문제없이 성공적으로 삽입됩니다.
+```
+
+**결과:**
+`department` 필드는 중복된 "Sales" 값을 가질 수 있습니다. 이 인덱스는 `db.employees.find({ department: "Sales" })`와 같은 쿼리의 **성능을 향상**시키는 역할만 합니다.
+
+-----
+
+### 2\. 고유 인덱스 (Unique Index) - **중복 금지**
+
+**상황:** 각 직원은 고유한 사번(`employeeId`)을 가져야 합니다. 이 규칙을 데이터베이스 수준에서 강제하고 싶습니다.
+
+**인덱스 생성:**
+
+```javascript
+// 'employeeId' 필드에 고유 인덱스를 생성합니다. { unique: true } 옵션이 핵심입니다.
+db.employees.createIndex({ employeeId: 1 }, { unique: true })
+```
+
+**데이터 삽입:**
+
+```javascript
+db.employees.insertOne({ name: "David", employeeId: 101 })
+// 성공적으로 삽입됩니다.
+
+db.employees.insertOne({ name: "Eve", employeeId: 102 })
+// 성공적으로 삽입됩니다.
+
+db.employees.insertOne({ name: "Frank", employeeId: 101 })
+// 실패! employeeId 101은 이미 존재하므로, MongoDB는 이 삽입을 거부하고 오류를 반환합니다.
+```
+
+**결과:**
+"Frank"의 문서는 삽입되지 않고, 다음과 유사한 \*\*중복 키 오류(duplicate key error)\*\*가 발생합니다. 이 인덱스는 쿼리 성능 향상뿐만 아니라 **데이터의 무결성을 강제하는 규칙**의 역할을 합니다.
+
+### 비교 요약
+
+| 구분 | 비고유 인덱스 (Non-Unique) | 고유 인덱스 (Unique) |
+| :--- | :--- | :--- |
+| **주요 목적** | 쿼리 성능 향상 | 데이터 무결성 강제 + 쿼리 성능 향상 |
+| **중복 값** | **허용** | **금지** |
+| **사용 사례** | 부서, 카테고리, 도시 등 중복 가능한 필드 | 이메일, 사용자 ID, 주민등록번호, 사번 등 고유해야 하는 필드 |
+
+
+
 
