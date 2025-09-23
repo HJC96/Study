@@ -1024,5 +1024,80 @@ db.employees.insertOne({ name: "Frank", employeeId: 101 })
 | **사용 사례** | 부서, 카테고리, 도시 등 중복 가능한 필드 | 이메일, 사용자 ID, 주민등록번호, 사번 등 고유해야 하는 필드 |
 
 
+36. 추가 개념: $unwind와 $group을 이용한 배열 집계
+문제
+orders 컬렉션에 다음과 같은 문서들이 있습니다. 각 제품(product_id)별로 주문된 총 수량(quantity)을 찾는 쿼리는 무엇입니까?
 
+데이터 예시:
 
+JSON
+
+// Document 1
+{ "customer_id" : "A123", "items" : [ { "product_id" : "P001", "quantity" : 5 }, { "product_id" : "P002", "quantity" : 2 } ] },
+// Document 2
+{ "customer_id" : "B456", "items" : [ { "product_id" : "P001", "quantity" : 3 }, { "product_id" : "P003", "quantity" : 1 } ] },
+// Document 3
+{ "customer_id" : "C789", "items" : [ { "product_id" : "P002", "quantity" : 4 } ] }
+출제자 의도
+배열 내의 데이터를 집계하기 위해 $unwind를 사용한 후, 특정 키를 기준으로 문서를 그룹화하려면 $group 스테이지에서 _id 필드를 명시해야 한다는 점을 이해하고 있는지 평가합니다.
+
+나의 오답
+JavaScript
+
+db.orders.aggregate([
+   {
+      $unwind: "$items"
+   },
+   {
+      $group: {
+         total_orders: { $sum: "$items.quantity" }
+      }
+   }
+])
+오답 분석:
+이 쿼리는 items 배열을 올바르게 분해($unwind)했지만, $group 단계에서 그룹화의 기준이 되는 _id 필드를 지정하지 않았습니다. _id 필드가 없으면 $group은 모든 문서를 단일 그룹으로 결합하여 모든 문서에 걸친 quantity 필드의 총합을 계산합니다. 이는 각 제품별 주문 수량을 제공하는 대신, 전체 제품의 총 주문 수량을 반환하게 됩니다.
+
+정답
+JavaScript
+
+db.orders.aggregate([
+   {
+      $unwind: "$items"
+   },
+   {
+      $group: {
+         _id: "$items.product_id",
+         total_orders: { $sum: "$items.quantity" }
+      }
+   }
+])
+정답 해설:
+이 쿼리는 MongoDB Aggregation Framework를 사용하여 각 제품별 주문 수량을 정확하게 계산합니다.
+
+$unwind: "$items": items 배열을 분해하여 각 배열 요소에 대해 별도의 문서를 생성합니다. 3개의 주문 문서가 5개의 개별 품목 문서로 변환됩니다.
+
+$group: { _id: "$items.product_id", ... }: 분해된 문서를 items.product_id 필드를 기준으로 그룹화합니다. 즉, 동일한 product_id를 가진 문서들이 같은 그룹으로 묶입니다.
+
+total_orders: { $sum: "$items.quantity" }: 각 그룹 내에서 quantity 필드의 합계를 계산하여 total_orders라는 필드에 저장합니다.
+
+단계별 실행 과정
+1. $unwind 실행 후:
+
+JSON
+
+{ "customer_id" : "A123", "items" : { "product_id" : "P001", "quantity" : 5 } }
+{ "customer_id" : "A123", "items" : { "product_id" : "P002", "quantity" : 2 } }
+{ "customer_id" : "B456", "items" : { "product_id" : "P001", "quantity" : 3 } }
+{ "customer_id" : "B456", "items" : { "product_id" : "P003", "quantity" : 1 } }
+{ "customer_id" : "C789", "items" : { "product_id" : "P002", "quantity" : 4 } }
+2. $group 실행 후 (최종 결과):
+
+JSON
+
+{ "_id" : "P001", "total_orders" : 8 }  // 5 + 3
+{ "_id" : "P003", "total_orders" : 1 }
+{ "_id" : "P002", "total_orders" : 6 }  // 2 + 4
+핵심 개념 정리
+$unwind: 배열 필드를 "풀어서" 각 배열 요소마다 문서를 복제하는 집계 파이프라인 단계입니다. 배열 내 데이터를 다룰 때 거의 항상 첫 단계로 사용됩니다.
+
+$group의 _id 필드: 그룹화의 기준을 정의하는 핵심 필드입니다. 이 필드를 지정하지 않으면 모든 문서가 하나의 그룹으로 처리됩니다.
