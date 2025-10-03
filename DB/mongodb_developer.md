@@ -1173,3 +1173,990 @@ db.users.find(
   { "name": "Alice" },
   { "name": 1, "age": 1, "city": 1, "_id": 0 }
 )
+
+54. 추가 개념: 데이터 모델링 - 참조 패턴의 올바른 적용
+문제
+전자 상거래 플랫폼을 위한 MongoDB 스키마를 설계하고 있습니다. 시스템에는 Products, Categories, Reviews 세 개의 컬렉션이 있습니다.
+Products 컬렉션: 이름, 가격 및 Categories 컬렉션을 참조하는 categoryId를 포함합니다.
+Categories 컬렉션: 카테고리 이름과 설명을 포함합니다.
+Reviews 컬렉션: Products 컬렉션을 참조하는 productId, userId, rating, reviewText를 포함합니다.
+이 시나리오에서 Products, Categories, Reviews 간의 관계를 모델링하는 가장 좋은 접근 방식은 무엇입니까?
+출제자 의도
+데이터 관계의 특성(1:N vs 1:Squillions)을 파악하고, 데이터 중복 및 무한 배열(unbounded array) 문제를 피하기 위해 참조(referencing)를 일관되게 적용할 수 있는지 평가합니다.
+나의 오답
+Categories를 Products 컬렉션 내에 직접 임베드한다.
+오답 분석:
+Categories를 Products에 임베딩하면 데이터 중복이 발생합니다. 만약 카테고리 이름이 변경되면, 해당 카테고리에 속한 모든 제품 문서를 찾아서 업데이트해야 하므로 매우 비효율적입니다.
+정답
+Products 컬렉션에서 categoryId를 사용하여 Categories를 참조하고, Reviews 컬렉션에서 productId를 사용하여 Products를 참조한다.
+정답 해설:
+Products에서 categoryId를 사용하여 Categories를 참조하는 것이 최적입니다. 왜냐하면 카테고리는 일반적으로 많은 제품에서 쉽게 참조할 수 있는 작고 관리 가능한 양의 데이터를 포함하기 때문입니다. 마찬가지로, Reviews에서 productId를 사용하여 Products를 참조하면 리뷰가 제품과 독립적으로 증가할 수 있어 확장성을 허용하며, 크고 중첩된 문서를 피할 수 있습니다.
+핵심 개념 정리
+이 시나리오는 두 가지 다른 종류의 "일대다" 관계를 보여주며, 두 경우 모두 참조(Referencing)가 최적인 이유를 잘 설명합니다.
+Products와 Categories (1 대 다수 - One-to-Many)
+관계: 하나의 카테고리(Categories)는 여러 제품(Products)을 가질 수 있습니다.
+모델링: Products 문서가 categoryId 필드를 통해 Categories를 참조합니다.
+이유: 데이터 중복을 방지하고 일관성을 유지하기 위함입니다. 만약 "전자기기" 카테고리의 이름을 "가전제품"으로 바꾸고 싶을 때, Categories 컬렉션의 문서 하나만 수정하면 됩니다. 만약 임베딩했다면, 수천 개의 제품 문서를 모두 수정해야 합니다.
+Products와 Reviews (1 대 무한대 - One-to-Squillions)
+관계: 하나의 제품(Products)은 잠재적으로 수백만 개의 리뷰(Reviews)를 가질 수 있습니다.
+모델링: Reviews 문서가 productId 필드를 통해 Products를 참조합니다. (이를 '자식 참조'라고 합니다.)
+이유: 무한 배열(Unbounded Array) 안티패턴을 피하기 위함입니다. 만약 모든 리뷰를 제품 문서 안에 임베딩한다면, 리뷰가 늘어날수록 제품 문서가 계속 커져 16MB 크기 제한에 도달하거나 성능이 심각하게 저하될 수 있습니다.
+올바른 스키마 예시:
+Categories 컬렉션:
+JSON
+{ "_id": "CAT_ELEC", "name": "Electronics", "description": "..." }
+
+
+Products 컬렉션:
+JSON
+{
+  "_id": "PROD_123",
+  "name": "Super Laptop",
+  "price": 1200,
+  "categoryId": "CAT_ELEC" // Categories 참조
+}
+
+
+Reviews 컬렉션:
+JSON
+{
+  "_id": "REV_abc",
+  "productId": "PROD_123", // Products 참조
+  "rating": 5,
+  "reviewText": "Amazing!"
+}
+
+
+
+
+
+
+55. 추가 개념: 동시성 - 삭제(remove)와 업데이트(update)의 경합
+문제
+tasks 컬렉션에 다음과 같은 문서가 있습니다.
+JSON
+{
+  "_id": ObjectId("..."),
+  "task": "Review PR",
+  "status": "pending",
+  "assignedTo": "alice"
+}
+
+
+두 개의 작업이 거의 동시에 실행됩니다.
+작업 A: findAndModify({ query: { task: "Review PR", status: "pending" }, remove: true })
+작업 B: findAndModify({ query: { task: "Review PR", status: "pending" }, update: { $set: { status: "completed" } }, new: true })
+작업 B가 작업 A보다 약간 늦게 시작하지만, 작업 A가 완료되기 전에 시작됩니다. 두 작업이 모두 실행된 후 tasks 컬렉션의 최종 상태는 어떻게 될까요?
+출제자 의도
+단일 문서에 대한 쓰기 작업의 원자성과 잠금(locking) 메커니즘으로 인해, 거의 동시에 발생하는 여러 작업이 실제로는 순차적으로 처리됨을 이해하고 그 결과를 예측할 수 있는지 평가합니다.
+나의 오답
+status가 "completed"인 새 문서가 삽입될 것이다.
+오답 분석:
+findAndModify는 기본적으로 일치하는 문서를 찾지 못했을 때 새 문서를 삽입하지 않습니다. (새 문서를 삽입하는 것은 upsert: true 옵션이 있을 때의 동작입니다.) 작업 A에 의해 문서가 먼저 제거되므로, 작업 B는 쿼리 조건에 맞는 문서를 찾지 못하게 되고, 따라서 아무런 삽입이나 업데이트 작업을 수행하지 않습니다.
+정답
+문서는 컬렉션에서 제거될 것이다.
+정답 해설:
+MongoDB의 쓰기 작업은 문서 수준에서 원자적(atomic)이므로, 두 작업은 순차적으로 실행됩니다.
+작업 A가 먼저 실행: 작업 A가 먼저 문서에 대한 잠금(lock)을 획득하고 query 조건에 맞는 문서를 찾습니다.
+문서 삭제: remove: true 옵션에 따라 해당 문서를 컬렉션에서 영구적으로 삭제합니다.
+작업 B 실행: 작업 A가 완료된 후, 작업 B가 실행되지만 query 조건({ task: "Review PR", status: "pending" })에 맞는 문서는 이미 삭제되었으므로 아무것도 찾을 수 없습니다.
+아무 작업도 하지 않음: 작업 B는 업데이트할 대상을 찾지 못했으므로 아무런 작업도 수행하지 않고 종료됩니다.
+결과적으로 컬렉션에는 해당 문서가 존재하지 않게 됩니다.
+핵심 개념 정리
+원자성과 잠금(Atomicity and Locking): 단일 문서에 대한 MongoDB의 모든 쓰기 작업은 원자적입니다. 이는 한 작업이 문서를 수정하는 동안 다른 작업은 해당 문서에 접근할 수 없도록 잠금이 걸린다는 의미입니다. 따라서 "동시에" 요청이 들어와도 실제로는 순서대로 처리됩니다.
+findAndModify의 동작: 이 명령어는 query로 문서를 찾고, 그 다음 update 또는 remove를 수행합니다. 만약 query 단계에서 문서를 찾지 못하면, 후속 작업(update, remove)은 일어나지 않습니다.
+remove: true: 이 옵션은 찾은 문서를 영구적으로 삭제하는 강력한 작업입니다.
+new: true: 이 옵션은 명령어의 반환 값을 제어합니다.
+new: false (기본값): 수정 전의 원본 문서를 반환합니다.
+new: true: 수정 후의 새로운 문서를 반환합니다.
+문제의 작업 B에서는 new: true가 사용되었으므로, 만약 작업 A가 없어서 B가 성공했다면, status가 'completed'로 변경된 후의 문서를 반환했을 것입니다. 하지만 작업 A 때문에 B가 대상을 찾지 못했으므로, B는 아무것도 반환하지 않습니다.
+56. 추가 개념: 배열 내 문서 쿼리 ($elemMatch vs. $in)
+문제
+sales 컬렉션에 주문 정보가 저장되어 있습니다. items 배열 필드에 name이 'notepad'인 항목을 포함하는 모든 판매 문서를 어떻게 찾을 수 있습니까?
+데이터 예시:
+JSON
+{
+  ...
+  "items": [
+    { "name": "printer paper", "price": 40.01, "quantity": 2 },
+    { "name": "pens", "price": 56.12, "quantity": 5 },
+    { "name": "notepad", "price": 18.47, "quantity": 2 }
+  ],
+  ...
+}
+
+
+출제자 의도
+배열 내부에 있는 **문서(document)**를 쿼리할 때, 단일 배열 요소가 여러 조건을 만족해야 하는 경우 사용하는 $elemMatch와, 필드 값이 주어진 목록 중 하나와 일치하는지 확인하는 $in의 차이점을 이해하고 있는지 평가합니다.
+나의 오답
+$in
+오답 분석:
+$in 연산자는 필드의 값이 지정된 배열에 있는 값 중 하나와 일치하는 문서를 찾을 때 사용됩니다. 예를 들어, storeLocation이 "Denver" 또는 "Austin"인 문서를 찾을 때 db.sales.find({ storeLocation: { $in: ["Denver", "Austin"] } }) 처럼 사용합니다. items는 객체(문서)로 이루어진 배열이므로, $in은 이 구조 내부를 검색하는 데 적합하지 않습니다.
+정답
+$elemMatch
+정답 해설:
+$elemMatch 연산자는 배열 필드 내의 요소 중 지정된 모든 기준을 동시에 만족하는 요소가 하나 이상 포함된 문서를 찾을 때 사용됩니다. 이 문제에서는 items 배열의 요소 중 name이 'notepad'인 객체가 하나라도 있는 문서를 찾아야 하므로 $elemMatch가 정확한 해결책입니다.
+올바른 쿼리 구문:
+JavaScript
+db.sales.find({ items: { $elemMatch: { name: 'notepad' } } })
+
+
+핵심 개념 정리: $elemMatch vs. 단순 점 표기법(Dot Notation)
+이 특정 문제처럼 하나의 조건만으로 배열 내 문서를 찾을 때는 더 간단한 방법도 있습니다.
+단순 점 표기법 (Dot Notation):
+JavaScript
+db.sales.find({ "items.name": "notepad" })
+
+
+이 쿼리는 "items 배열 안의 어떤 요소든 name 필드가 'notepad'인 문서"를 찾아주므로, 이 문제에서는 정답과 동일한 결과를 냅니다.
+$elemMatch가 반드시 필요한 경우:
+두 개 이상의 조건이 배열의 '같은' 요소 내에서 충족되어야 할 때 $elemMatch는 필수적입니다.
+예시: 이름이 'pens'이고 수량이 5개 이상인 항목이 포함된 주문 찾기
+잘못된 쿼리 (Dot Notation):
+JavaScript
+db.sales.find({ "items.name": "pens", "items.quantity": { $gte: 5 } })
+
+
+이 쿼리는 한 항목의 이름이 'pens'이고 다른 항목의 수량이 5 이상이어도 문서를 잘못 찾아낼 수 있습니다.
+올바른 쿼리 ($elemMatch):
+JavaScript
+db.sales.find({ items: { $elemMatch: { name: "pens", quantity: { $gte: 5 } } } })
+
+
+이 쿼리는 '동일한' 배열 요소 하나가 name이 'pens'이면서 동시에 quantity가 5 이상인 조건을 만족할 때만 문서를 정확하게 찾아냅니다.
+결론: 배열 내 문서에 대해 하나의 조건만 검사할 때는 단순 점 표기법이 편리합니다. 하지만 여러 조건이 동일한 배열 요소 내에서 만족되어야 하는 복합적인 쿼리에는 반드시 $elemMatch를 사용해야 합니다.
+
+57. 추가 개념: 배열에서 단일 값 쿼리 (Direct Match vs. $in)
+문제
+students 컬렉션의 각 문서는 학생이 등록한 과목 코드를 나열하는 courses라는 배열 필드를 포함합니다. 과목 코드 "CS101"에 등록한 모든 학생을 찾는 올바른 쿼리는 무엇입니까?
+데이터 예시:
+JSON
+{ "name": "Alice", "age": 20, "courses": ["CS101", "MA203"] },
+{ "name": "Bob", "age": 22, "courses": ["EE101", "PH101"] },
+{ "name": "Charlie", "age": 21, "courses": ["CS101", "CS305"] }
+
+
+출제자 의도
+배열 필드에서 특정 단일 요소를 찾는 가장 간단하고 직접적인 방법을 알고 있는지, 그리고 $in 연산자의 올바른 구문과 용도를 이해하고 있는지 평가합니다.
+나의 오답
+JavaScript
+db.students.find({ "courses": { $in: "CS101" } })
+
+
+오답 분석:
+$in 연산자는 값으로 배열을 기대합니다 (예: { $in: ["CS101"] }). $in 내부에 단일 값(스칼라 값)을 사용하는 것은 구문적으로 올바르지 않으며 오류를 발생시킵니다. 이는 $in 연산자가 여러 값을 비교하기 위한 것임을 잘못 이해했기 때문에 발생하는 실수입니다.
+정답
+JavaScript
+db.students.find({ "courses": "CS101" })
+
+
+정답 해설:
+이 쿼리는 MongoDB가 스칼라 값에 대해 배열 필드를 직접 비교할 수 있기 때문에 올바릅니다. 만약 "CS101"이 문서의 courses 배열에 요소로 존재하면 해당 문서가 반환됩니다. 이는 배열 필드에서 특정 값을 쿼리하는 가장 간단하고 효과적인 방법입니다.
+핵심 개념 정리
+배열에 대한 직접 일치 (Direct Match on Array):
+db.collection.find({ arrayField: "value" }) 구문은 arrayField 배열에 "value"가 하나의 요소로서 포함되어 있는 모든 문서를 찾습니다.
+이는 "배열에 이 값이 포함되어 있는가?"를 묻는 가장 기본적인 방법입니다.
+$in 연산자의 올바른 사용법:
+$in은 필드의 값이 제공된 배열 안의 여러 값 중 하나와 일치하는 문서를 찾을 때 사용됩니다.
+구문: db.collection.find({ field: { $in: ["valueA", "valueB", "valueC"] } })
+의미: "field의 값이 'valueA' 또는 'valueB' 또는 'valueC' 중 하나와 일치하는가?"
+따라서 "CS101" 또는 "MA203" 과목을 듣는 학생을 찾고 싶을 때 다음과 같이 사용합니다.
+JavaScript
+db.students.find({ "courses": { $in: ["CS101", "MA203"] } })
+
+
+
+
+결론: 배열에서 단 하나의 특정 값을 찾을 때는 간단한 직접 일치 쿼리를 사용하고, 여러 값 중 하나라도 일치하는 것을 찾을 때 $in 연산자를 사용해야 합니다.
+
+
+55. 추가 개념: 복합 인덱스와 정규식 쿼리 (Compound Index with Regex Query)
+문제
+artists 컬렉션에 다음과 같은 문서와 인덱스가 있습니다.
+문서 예시:
+JSON
+{
+  "_id": 5,
+  "last_name": "Maurer",
+  "first_name": "Alfred",
+  "year_born": 1868,
+  "year_died": 1932,
+  "nationality": "USA"
+}
+
+
+인덱스:
+JavaScript
+db.artists.createIndex( { "last_name": 1, "nationality": 1 } )
+
+
+MongoDB는 아래 쿼리를 어떻게 처리할까요?
+db.artists.find( { "last_name": /^B./, "nationality": 'France' } )
+출제자 의도
+복합 인덱스가 있을 때, 쿼리 조건에 접두사(prefix) 기반의 정규식이 포함된 경우 MongoDB가 인덱스를 효율적으로 사용할 수 있는지(인덱스 스캔)를 이해하는지 평가합니다.
+나의 오답
+텍스트 인덱스 스캔 (As a text index scan).
+오답 분석:
+텍스트 인덱스 스캔은 전문(full-text) 검색 작업을 위해 text 타입의 인덱스를 사용할 때를 의미합니다. 주어진 예제에서는 text 인덱스가 생성되었다는 언급이 없으며, 쿼리도 $text 연산자를 사용하지 않았습니다. 정규식을 이용한 패턴 매칭과 텍스트 검색은 다른 개념입니다.
+정답
+인덱스 스캔 (As an index scan).
+정답 해설:
+제공된 쿼리 { "last_name": /^B./, "nationality": 'France' }는 인덱싱된 필드인 last_name과 nationality에 대한 검색 조건을 포함합니다. last_name 필드의 정규식 /^B./는 "B"로 시작하는 성(last name)에 대한 패턴 매칭을 나타냅니다. 쿼리는 또한 nationality 필드에 대해 'France'라는 값을 지정합니다.
+인덱스가 이 두 필드를 모두 포함하고 있기 때문에, MongoDB는 인덱스를 효율적으로 활용하여 인덱스 스캔을 수행할 수 있습니다. 즉, MongoDB는 전체 컬렉션을 다 훑어보는 대신, 인덱스를 사용하여 "B"로 시작하는 성을 가진 문서들의 위치를 빠르게 찾은 다음, 그 결과 내에서 국적이 'France'인 문서를 효율적으로 필터링합니다. 이는 쿼리 성능을 크게 향상시킵니다.
+핵심 개념 정리
+인덱스 스캔 (Index Scan): 쿼리를 해결하기 위해 전체 컬렉션이 아닌, 인덱스만 탐색하여 필요한 문서를 찾는 효율적인 방식입니다.
+컬렉션 스캔 (Collection Scan): 인덱스를 사용하지 못하고 컬렉션의 모든 문서를 하나씩 확인하는 비효율적인 방식입니다.
+인덱스 사용이 가능한 정규식: /^prefix/ 와 같이 문자열의 시작 부분을 고정하는 정규식(접두사 표현식)은 인덱스를 효율적으로 사용할 수 있습니다. MongoDB는 인덱스에서 'prefix'로 시작하는 키 범위를 빠르게 찾을 수 있습니다.
+인덱스 사용이 비효율적인 정규식: /substring/ (중간 문자열 검색)이나 /.+suffix$/ (접미사 검색)와 같은 정규식은 인덱스의 모든 키를 스캔해야 할 수 있어 성능상 이점이 거의 없거나 아예 인덱스를 사용하지 못할 수도 있습니다.
+결론: 복합 인덱스의 첫 번째 필드에 대해 접두사 기반 정규식을 사용하면, MongoDB는 여전히 해당 인덱스를 효율적으로 활용하여 인덱스 스캔을 수행할 수 있습니다.
+MongoDB 주요 데이터 모델링 패턴 가이드
+MongoDB의 문서(document) 모델은 매우 유연하여 다양한 방법으로 데이터를 구조화할 수 있습니다. 어떤 패턴을 선택하느냐에 따라 애플리케이션의 성능, 확장성, 유지보수 용이성이 크게 달라집니다. 아래는 가장 중요하고 자주 사용되는 데이터 모델링 패턴들입니다.
+1. 애트리뷰트 패턴 (The Attribute Pattern)
+핵심 아이디어: 유사한 속성들을 키-값 쌍의 배열로 그룹화하여, 필드 이름에 있던 정보를 필드 값으로 옮깁니다.
+언제 사용하는가?
+제품 사양처럼 필드가 너무 많아지거나, 필드 이름 자체에 중요한 데이터가 포함될 때.
+특정 속성을 기준으로 쿼리하거나 인덱싱해야 할 때.
+장점: 쿼리와 인덱싱이 간결해지고, 새로운 속성이 추가되어도 스키마를 변경할 필요가 없습니다.
+예시: 수많은 스펙을 가진 제품 정보
+- Before (나쁜 모델):
+{
+  "product_id": "laptop123",
+  "ram_8gb": true,
+  "storage_ssd": true,
+  "storage_512gb": true,
+  "screen_15inch": true
+}
+
+
+- After (애트리뷰트 패턴 적용):
+{
+  "product_id": "laptop123",
+  "specs": [
+    { "k": "ram", "v": "8gb" },
+    { "k": "storage_type", "v": "ssd" },
+    { "k": "storage_size", "v": "512gb" },
+    { "k": "screen_size", "v": "15inch" }
+  ]
+}
+// 이제 db.products.find({ "specs.k": "ram", "specs.v": "8gb" }) 와 같이
+// 유연한 쿼리가 가능하고, "specs.k"와 "specs.v"에 인덱스를 걸 수 있습니다.
+
+
+2. 계산 패턴 (The Computed Pattern)
+핵심 아이디어: 자주 필요한 계산 결과를 별도의 필드에 미리 계산하여 저장합니다.
+언제 사용하는가?
+읽기 작업 시 반복적으로 복잡한 계산이 필요하여 성능 저하가 발생할 때.
+장점: 읽기 성능을 극대화합니다. 매번 계산할 필요 없이 저장된 값을 바로 읽으면 됩니다.
+단점/주의사항: 데이터가 변경될 때마다 계산 필드도 함께 업데이트해야 하므로 쓰기 작업이 조금 더 복잡해집니다.
+예시: 게시글의 댓글 수와 최신 댓글 날짜 계산
+- Before (읽을 때마다 계산): 게시글을 불러올 때마다 해당 게시글의 모든 댓글을 count() 해야 함.
+- After (계산 패턴 적용):
+// posts 컬렉션
+{
+  "_id": "post1",
+  "title": "My First Post",
+  "comment_count": 2, // 댓글이 추가/삭제될 때마다 $inc 연산자로 업데이트
+  "latest_comment_date": ISODate("...") // 댓글이 추가될 때마다 업데이트
+}
+
+
+3. 서브셋 패턴 (The Subset Pattern)
+핵심 아이디어: 하나의 문서에 있는 방대한 데이터 중, 자주 사용하는 부분만 잘라내어 원본 문서에 남겨두고, 나머지는 별도의 문서나 컬렉션으로 분리합니다.
+언제 사용하는가?
+문서 크기가 16MB 제한에 가까워지거나, 자주 쓰는 데이터와 거의 쓰지 않는 데이터가 섞여 있어 메모리(Working Set) 낭비가 심할 때.
+장점: 애플리케이션이 주로 사용하는 데이터만 메모리에 로드되므로 성능과 효율성이 향상됩니다.
+예시: 인기 제품과 수많은 리뷰
+- Before (하나의 거대한 문서):
+{
+  "product_id": "prod456",
+  "name": "Super Camera",
+  "price": 2000,
+  "reviews": [ /* ... 수만 개의 리뷰 객체 ... */ ] 
+}
+
+
+- After (서브셋 패턴 적용):
+// products 컬렉션 (자주 쓰는 핵심 정보)
+{
+  "product_id": "prod456",
+  "name": "Super Camera",
+  "price": 2000,
+  "review_count": 15000,
+  "recent_reviews": [ /* ... 최근 5개의 리뷰 객체 ... */ ]
+}
+
+// reviews 컬렉션 (필요할 때만 조회하는 전체 정보)
+{ "review_id": "rev1", "product_id": "prod456", "text": "..." },
+{ "review_id": "rev2", "product_id": "prod456", "text": "..." }
+// ...
+
+
+4. 버킷 패턴 (The Bucket Pattern)
+핵심 아이디어: 짧은 시간 동안 대량으로 발생하는 데이터들을 개별 문서로 저장하지 않고, 시간 등의 기준으로 묶어 하나의 "버킷" 문서 안에 배열로 저장합니다.
+언제 사용하는가?
+IoT 센서 데이터, 실시간 로그, 분석 데이터 등 시계열(Time-series) 데이터 처리에 매우 효과적입니다.
+장점: 문서의 총 개수와 인덱스의 크기를 획기적으로 줄여 쓰기 및 읽기 성능을 향상시키고, 데이터 관리를 용이하게 합니다.
+예시: 1초마다 수집되는 센서 데이터
+- Before (초당 1개 문서): 1시간이면 3,600개의 문서가 생성됨.
+- After (버킷 패턴 적용):
+// sensor_readings 컬렉션 (1시간 단위 버킷)
+{
+  "sensor_id": "temp01",
+  "start_time": ISODate("2025-10-03T10:00:00Z"),
+  "end_time": ISODate("2025-10-03T10:59:59Z"),
+  "measurement_count": 3600,
+  "readings": [
+    { "timestamp": ISODate("...00:00:01"), "value": 25.1 },
+    { "timestamp": ISODate("...00:00:02"), "value": 25.2 },
+    /* ... 3600개의 측정값 ... */
+  ]
+}
+
+
+5. 확장 참조 패턴 (The Extended Reference Pattern)
+핵심 아이디어: 참조(Referencing) 관계에서, 조인($lookup) 비용을 줄이기 위해 자주 사용되는 필드를 원본 문서에 중복 저장합니다.
+언제 사용하는가?
+읽기 작업이 매우 빈번하여 $lookup 오버헤드를 피하고 싶을 때.
+장점: 간단한 find 쿼리만으로 필요한 정보를 얻을 수 있어 읽기 성능이 향상됩니다.
+단점/주의사항: 데이터가 중복되므로, 원본 데이터(예: 저자 이름)가 변경되면 중복 저장된 모든 곳을 찾아 업데이트해야 하는 부담이 있습니다.
+예시: 책 정보와 저자 이름
+- Before (순수 참조): 저자 이름을 보려면 항상 authors 컬렉션을 $lookup 해야 함.
+- After (확장 참조 패턴 적용):
+// books 컬렉션
+{
+  "title": "MongoDB Patterns",
+  "author_id": "author789",
+  "author_name": "Jane Doe" // 저자 이름 중복 저장
+}
+
+// authors 컬렉션
+{ "_id": "author789", "name": "Jane Doe", "country": "USA" }
+
+
+6. 스키마 버전 관리 패턴 (The Schema Versioning Pattern)
+핵심 아이디어: 모든 문서에 스키마 버전을 명시하는 필드를 추가합니다.
+언제 사용하는가?
+애플리케이션이 발전하면서 데이터 스키마가 변경될 가능성이 있는 모든 경우.
+장점: 애플리케이션 코드에서 문서의 버전을 확인하고, 구버전 스키마의 문서를 새로운 스키마로 마이그레이션하거나 호환성을 유지하는 로직을 쉽게 구현할 수 있습니다.
+예시: 사용자 주소 필드 변경
+- Before (구버전):
+{ "name": "John", "address": "123 Main St, Anytown" }
+
+
+- After (스키마 버전 관리 적용):
+// v1 문서
+{ "name": "John", "address": "123 Main St, Anytown", "schema_version": 1 }
+
+// v2 문서 (주소를 구조화)
+{ 
+  "name": "Jane", 
+  "address": { "street": "456 Oak Ave", "city": "Newville" },
+  "schema_version": 2
+}
+// 애플리케이션은 schema_version을 보고 데이터를 적절히 처리합니다.
+
+
+7. 폴리모픽 패턴 (The Polymorphic Pattern)
+핵심 아이디어: 하나의 컬렉션에 서로 조금씩 다른 형태의 문서들을 함께 저장합니다. 각 문서에는 자신의 형태를 알려주는 type과 같은 필드를 포함합니다.
+언제 사용하는가?
+개념적으로는 유사하지만(예: '결제 수단'), 실제로는 필드가 서로 다른 다양한 유형의 데이터를 단일 컬렉션에서 관리하고 싶을 때.
+장점: 여러 컬렉션을 만들 필요 없이 관련된 다양한 유형의 데이터를 한 곳에서 관리할 수 있어 애플리케이션 로직이 단순해질 수 있습니다.
+예시: 다양한 결제 수단 정보
+- Before (나쁜 모델): 결제 수단마다 별도의 컬렉션 생성.
+// credit_cards 컬렉션
+{ "user_id": "user1", "card_number": "...", "expiry": "..." }
+
+// bank_accounts 컬렉션
+{ "user_id": "user2", "account_number": "...", "bank_name": "..." }
+
+
+- After (폴리모픽 패턴 적용):
+// payments 컬렉션
+[
+  {
+    "payment_method_type": "CREDIT_CARD",
+    "user_id": "user1",
+    "card_number": "...",
+    "expiry": "..."
+  },
+  {
+    "payment_method_type": "BANK_ACCOUNT",
+    "user_id": "user2",
+    "account_number": "...",
+    "bank_name": "..."
+  }
+]
+// 이제 db.payments.find({ "user_id": "user1" }) 쿼리 하나로
+// 해당 유저의 모든 결제 수단을 가져올 수 있습니다.
+
+네, 알겠습니다. 복합 인덱스를 정렬(sort)에 활용하는 규칙에 대한 문제입니다. 요청하신 대로 문서 업데이트 없이 직접 답변으로 57번 항목을 작성해 드리겠습니다.
+
+57. 추가 개념: 복합 인덱스와 정렬 최적화 (인덱스 접두사 규칙)
+문제
+routes 컬렉션에 다음과 같은 복합 인덱스가 생성되어 있습니다.
+인덱스:
+JavaScript
+db.routes.createIndex({
+   "airplane": 1,
+   "src_airport": 1,
+   "dst_airport": 1,
+   "stops": 1
+})
+
+
+다음 쿼리 중 이 인덱스를 정렬(sorting)에 효율적으로 사용할 수 있는 것은 무엇입니까? (2개 선택)
+출제자 의도
+복합 인덱스를 사용하여 쿼리의 필터링(find)과 정렬(sort)을 동시에 최적화할 때, 인덱스 필드 순서(접두사)를 반드시 지켜야 한다는 규칙을 이해하고 있는지 평가합니다.
+정답 및 오답 분석
+정답 쿼리
+db.routes.find( { airplane: 'CNC' } ).sort( { src_airport: 1, dst_airport: 1 } )
+정답 해설: 이 쿼리는 인덱스를 정렬에 완벽하게 활용합니다. find 조건이 인덱스의 첫 번째 필드(airplane)를 사용하고, sort 조건이 그 바로 다음 필드들(src_airport, dst_airport)을 인덱스 순서 그대로 따르기 때문입니다. MongoDB는 이미 airplane -> src_airport -> dst_airport 순으로 정렬된 인덱스에서 필요한 부분만 읽으면 되므로, 별도의 정렬 과정이 필요 없습니다.
+db.routes.find( { airplane: 'CNC', src_airport: { $gt: 'C' } } ).sort( { src_airport: 1 } )
+정답 해설: 이 쿼리 역시 인덱스를 정렬에 사용할 수 있습니다. find 조건이 인덱스의 접두사(airplane, src_airport)를 사용하고 있고, sort가 그 필드 중 하나인 src_airport를 기준으로 하기 때문입니다. MongoDB는 인덱스에서 airplane: 'CNC'인 구간을 찾은 뒤, 그 안에서 src_airport가 'C'보다 큰 부분을 스캔하는데, 이 과정 자체가 이미 src_airport 순서대로 진행되므로 효율적입니다.
+오답 쿼리
+db.routes.find( { airplane: 'CNC' } ).sort( { dst_airport: 1 } )
+오답 분석: find 조건은 인덱스 접두사(airplane)를 잘 사용했지만, sort가 중간 필드인 src_airport를 건너뛰고 dst_airport를 기준으로 정렬하려고 합니다. 인덱스는 src_airport를 기준으로 먼저 정렬되어 있기 때문에, dst_airport 기준 정렬에는 사용할 수 없습니다. 이 경우 MongoDB는 인덱스로 문서를 찾은 후, 메모리에서 별도의 정렬 작업을 수행해야 합니다.
+db.routes.find( { src_airport: 'JFK' } ).sort( { dst_airport: 1 } )
+오답 분석: find 조건이 인덱스의 첫 번째 필드(접두사)인 airplane을 포함하지 않습니다. 인덱스의 선행 필드 없이 중간 필드만으로 쿼리하면 인덱스를 효율적으로 사용할 수 없으므로, 정렬에도 당연히 사용할 수 없습니다.
+db.routes.find( { dst_airport: 'SFO' } ).sort( { airplane: 1 } )
+오답 분석: find 조건과 sort 조건 모두 인덱스의 접두사 순서를 따르지 않습니다. 이 쿼리는 인덱스의 이점을 거의 활용하지 못하고 컬렉션 스캔에 가까운 비효율적인 작업을 수행하게 됩니다.
+핵심 개념 정리
+인덱스 접두사 규칙 (Index Prefix Rule): 복합 인덱스가 정렬에 사용되려면, 쿼리 조건은 다음 규칙을 따라야 합니다.
+find 조건은 인덱스 필드의 접두사(prefix), 즉 처음부터 순서대로 하나 이상의 필드를 포함해야 합니다.
+sort 조건은 find 조건에서 사용된 필드 바로 다음부터 인덱스에 정의된 순서를 그대로 따라야 합니다.
+find 조건과 sort 조건 사이의 인덱스 필드를 건너뛸 수 없습니다.
+58. 추가 개념: mongodump와 mongoexport의 차이점
+문제
+MongoDB 클러스터에서 BSON 형식으로 데이터를 내보내는 데 사용할 수 있는 명령어는 다음 중 무엇입니까?
+출제자 의도
+데이터 백업을 위한 바이너리 형식(BSON)과 데이터 상호 운용성을 위한 텍스트 형식(JSON, CSV)의 차이를 이해하고, 각 목적에 맞는 올바른 유틸리티(mongodump vs. mongoexport)를 선택할 수 있는지 평가합니다.
+나의 오답
+mongoexport
+오답 분석:
+mongoexport는 MongoDB 컬렉션의 데이터를 JSON, CSV, 또는 TSV 형식으로 내보내는 데 사용됩니다. MongoDB 클러스터에서 데이터를 내보내는 데 사용할 수는 있지만, 문제에서 요구하는 BSON 형식으로는 내보내지 않습니다.
+정답
+mongodump
+정답 해설:
+mongodump 명령어는 MongoDB 데이터베이스의 데이터를 바이너리 덤프(binary dump)로 생성하는 데 사용됩니다. 이 명령어는 MongoDB가 내부적으로 사용하는 JSON과 유사한 문서의 이진 표현인 BSON 형식으로 데이터를 내보낼 수 있습니다. 이 명령어는 MongoDB 클러스터에서 데이터를 백업하거나 이전하는 데 적합합니다.
+핵심 개념 정리
+mongodump와 mongoexport는 둘 다 데이터를 내보내는 도구이지만, 그 목적과 출력 형식이 완전히 다릅니다.
+구분
+mongodump
+mongoexport
+주요 목적
+백업 및 복원 (Backup & Restore)
+데이터 상호 운용 (Data Interchange)
+출력 형식
+BSON (Binary JSON)
+JSON, CSV, TSV (Human-readable text)
+데이터 충실도
+높음. 모든 MongoDB 데이터 타입(ObjectId, Date 등)이 완벽하게 보존됨.
+낮을 수 있음. 확장 JSON 형식으로 표현되지만, 다른 시스템으로 가져갈 때 타입 정보가 유실될 수 있음.
+복원 도구
+mongorestore
+mongoimport
+사용 시나리오
+- 데이터베이스 전체/컬렉션 백업 - 다른 MongoDB 서버로 데이터 마이그레이션 - 재해 복구
+- 다른 프로그램(Excel, R, Python)에서 분석 - JSON API로 데이터 전송 - 사람이 읽을 수 있는 데이터 생성
+
+결론: MongoDB 시스템 간의 완전한 백업이나 데이터 이전을 원할 때는 BSON 형식을 사용하는 **mongodump**를, 다른 시스템과의 연동이나 사람이 읽을 수 있는 데이터가 필요할 때는 JSON/CSV 형식을 사용하는 **mongoexport**를 사용해야 합니다.
+59. 추가 개념: 임베디드 문서 쿼리 (Dot Notation vs. 전체 문서 매칭)
+문제
+orders 컬렉션에서 각 문서는 name과 email 필드를 가진 customer라는 임베디드 문서를 포함합니다. 다음 조건을 만족하는 주문을 삭제해야 합니다.
+orderId는 67890
+customer.name은 John Doe
+customer.email은 john.doe@example.com
+이 문서를 올바르게 삭제하는 deleteOne 표현식은 무엇입니까?
+출제자 의도
+임베디드 문서 내부의 특정 필드를 쿼리할 때, 유연하고 정확한 '점 표기법(dot notation)'과, 전체 구조가 일치해야만 하는 '전체 문서 매칭'의 차이점을 이해하고 올바른 방법을 선택할 수 있는지 평가합니다.
+나의 오답
+JavaScript
+db.orders.deleteOne({ 
+  "orderId": 67890, 
+  "customer": { "name": "John Doe", "email": "john.doe@example.com" } 
+})
+
+
+오답 분석:
+이 표현식은 customer 임베디드 문서 전체를 하나의 단위로 매칭하려고 시도합니다. MongoDB에서 임베디드 문서를 이런 식으로 매칭하는 것은 매우 엄격합니다. 즉, 데이터베이스에 저장된 customer 문서가 쿼리에 명시된 { "name": ..., "email": ... } 구조와 정확히 일치해야만 합니다. 만약 실제 문서에 phone과 같은 추가 필드가 있거나, 필드의 순서가 다르면 이 쿼리는 문서를 찾지 못해 삭제에 실패할 수 있습니다.
+정답
+JavaScript
+db.orders.deleteOne({ 
+  orderId: 67890, 
+  "customer.name": "John Doe", 
+  "customer.email": "john.doe@example.com" 
+})
+
+
+정답 해설:
+이 표현식은 **점 표기법(dot notation)**을 사용하여 customer 임베디드 문서 내의 개별 필드(name, email)에 직접 접근하고 값을 비교합니다. 이 방법은 customer 문서에 다른 추가 필드가 있거나 필드 순서가 달라도 상관없이, orderId, customer.name, customer.email 값이 모두 일치하기만 하면 문서를 정확하게 찾아냅니다. 이것이 원하는 문서를 삭제하는 데 가장 정확하고 안전한 방법입니다.
+핵심 개념 정리: 쿼리 방식 비교
+구분
+전체 문서 매칭 (Whole Document Match)
+점 표기법 (Dot Notation)
+방식
+{ "customer": { "name": "John", ... } }
+{ "customer.name": "John", ... }
+동작
+customer 문서의 구조와 내용 전체가 정확히 일치해야 함.
+customer 문서 내부의 특정 필드 값만 개별적으로 비교함.
+특징
+엄격함. 추가 필드나 다른 필드 순서에 민감함.
+유연함. 다른 필드의 존재나 순서에 영향을 받지 않음.
+추천
+거의 사용되지 않음. 정확히 일치하는 구조를 찾아야 하는 매우 특수한 경우에만 사용.
+표준 방식. 임베디드 문서 내부의 특정 필드를 조회할 때 항상 권장됨.
+
+결론: 임베디드 문서 내부의 특정 필드 값을 조회할 때는 점 표기법(dot notation)을 사용하는 것이 표준이며 가장 안전하고 예측 가능한 방법입니다.
+59. 추가 개념: 인과적 일관성과 읽기 관심 수준 (Causal Consistency & Read Concern)
+문제
+MongoDB를 사용하는 애플리케이션에서 사용자 세션을 유지 관리하고 있습니다. 네트워크 파티션이나 레플리카 셋 재선거가 발생하는 경우에도 세션 데이터를 읽을 때 세션의 일관성을 보장해야 합니다. 이 요구사항을 충족하기 위해 MongoDB의 인과적 일관성(Causal Consistency)을 사용하기로 결정했습니다. 세션 일관성을 보장하기 위해 인과적 일관성과 함께 사용해야 하는 읽기 관심 수준(read concern level)은 다음 중 무엇입니까?
+출제자 의도
+"내가 쓴 내용은 내가 반드시 읽을 수 있어야 한다"는 인과적 일관성의 개념을 이해하고, 이를 보장하기 위한 읽기 관심 수준의 역할을, 특히 데이터 롤백 방지("majority")와 특정 시점 보장("snapshot")의 차이점을 구분할 수 있는지 평가합니다.
+나의 오답
+"majority"
+오답 분석: "majority" 읽기 관심 수준은 반환된 데이터가 레플리카 셋 멤버의 과반수에 의해 확인되었음을 보장합니다. 이는 일반적인 상황에서 데이터가 롤백되지 않을 것을 보장하지만, 세션 일관성 자체를 제공하지는 않습니다. 예를 들어, 클라이언트가 쓰기 작업을 한 직후, 아직 해당 쓰기 내용이 복제되지 않은 다른 보조(Secondary) 노드에서 데이터를 읽게 되면, 클라이언트는 방금 자신이 쓴 내용을 보지 못하는 현상이 발생할 수 있습니다. "majority"는 이 현상을 막아주지 못합니다.
+정답
+"snapshot"
+정답 해설: "snapshot" 읽기 관심 수준은 인과적 일관성과 함께 사용될 때 데이터에 대한 일관된 뷰를 제공하여, 항상 동일한 데이터 스냅샷에서 읽기가 수행되도록 보장합니다. 이는 세션 일관성이 필요한 애플리케이션에 이상적입니다.
+핵심 개념 정리
+인과적 일관성 (Causal Consistency): 클라이언트 세션 내에서 작업의 순서를 논리적으로 보장하는 기능입니다. 간단히 말해, **"내가 A를 쓰고 B를 썼다면, B를 읽는 다른 작업은 반드시 A도 읽을 수 있어야 한다"**는 원칙을 지켜줍니다. 이는 클라이언트 세션이 시간을 거슬러 올라가는 것처럼 느껴지는 현상을 방지합니다.
+읽기 관심 수준 "majority": 데이터의 **내구성(durability)**에 초점을 맞춥니다. 과반수 노드에 커밋된 데이터만 읽어옴으로써, 주(Primary) 노드가 다운되어도 롤백되지 않을 데이터임을 보장받고 싶을 때 사용합니다.
+읽기 관심 수준 "snapshot": 데이터의 **격리성(isolation)**에 초점을 맞춥니다. 다중 문서 트랜잭션 내에서 사용될 때, 트랜잭션 내의 모든 읽기 작업이 트랜잭션 시작 시점의 특정 시점 스냅샷을 기준으로 데이터를 보도록 보장합니다. 즉, 트랜잭션이 진행되는 동안 다른 클라이언트가 데이터를 변경하더라도, 현재 트랜잭션은 그 변화를 보지 않고 일관된 "데이터 우주"에서 작업을 수행하게 됩니다.
+왜 "snapshot"이 정답인가? 인과적 일관성은 작업의 순서를 보장하고, "snapshot"은 특정 시점의 데이터를 고정시킵니다. 이 둘이 결합될 때 가장 강력한 형태의 세션 일관성이 보장됩니다. 클라이언트는 자신이 쓴 내용을 순서대로 볼 수 있을 뿐만 아니라, 트랜잭션이 진행되는 동안 외부의 변화에 전혀 영향을 받지 않는 완벽하게 격리된 데이터 뷰를 얻게 됩니다. 이는 복잡한 비즈니스 로직에서 데이터가 여러 번 읽히더라도 항상 동일한 상태를 유지해야 하는 경우에 필수적입니다.
+60. 추가 개념: 데이터 모델링 - 관계의 종류에 따른 전략 선택
+문제
+블로그 플랫폼을 위한 MongoDB 데이터베이스를 설계하고 있습니다. 시스템은 Users, Posts, Comments 컬렉션을 관리합니다. 주어진 시나리오에서, 제안된 데이터 모델의 안티패턴(anti-pattern)을 가장 잘 나타내는 설명은 무엇입니까?
+컬렉션 구조:
+Users: 사용자 정보
+Posts: 게시물 정보, 작성자 참조(user_id) 포함
+Comments: 댓글 정보, 게시물 참조(post_id)와 사용자 참조(user_id) 포함
+출제자 의도
+서로 다른 종류의 '일대다' 관계(1:N)를 구별하고, 데이터 중복 문제와 무한 배열(Unbounded Array) 문제를 피하기 위해 각각에 맞는 올바른 모델링 전략(참조 또는 임베딩)을 선택할 수 있는지 평가합니다.
+나의 오답
+Posts 컬렉션은 각 게시물에 작성자 정보를 표시할 때 추가적인 조회를 피하기 위해 Users 컬렉션을 임베드해야 한다.
+오답 분석: Users 컬렉션(작성자 정보)을 Posts 컬렉션 내에 임베딩하면, 한 명의 사용자가 여러 개의 게시물을 작성할 경우 심각한 데이터 중복이 발생합니다. 예를 들어, 사용자가 자신의 프로필 소개(bio)를 변경하면, 그가 작성한 모든 게시물 문서를 일일이 찾아서 임베딩된 bio를 수정해야 합니다. 이는 매우 비효율적이고 데이터 불일치를 유발할 수 있으므로, Posts 문서에 사용자의 _id를 참조로 저장하는 것이 훨씬 더 나은 방법입니다.
+정답
+Posts 컬렉션은 시간이 지남에 따라 댓글이 임베딩될 경우 거대한 게시물 문서를 유발할 수 있으므로, 참조를 사용하여 Comments 컬렉션에 연결해야 한다.
+정답 해설: Posts를 Comments에 참조로 연결하는 것이 올바른 접근 방식입니다. 왜냐하면 댓글은 시간이 지남에 따라 계속 누적될 수 있으며, 만약 댓글을 게시물 문서에 모두 임베딩한다면 게시물 문서가 지나치게 커질 수 있기 때문입니다. 참조를 사용함으로써 데이터는 정규화된 상태를 유지하고, 더 많은 댓글이 추가되어도 게시물 문서가 과도하게 커지는 것을 방지할 수 있습니다.
+핵심 개념 정리: 두 가지 '참조'의 다른 이유
+이 문제에서는 Posts -> Users 관계와 Posts -> Comments 관계 모두 **참조(Linking/Referencing)**를 사용하는 것이 최선이지만, 그 이유는 다릅니다.
+Posts가 Users를 참조하는 이유: 데이터 중복 및 일관성 문제 방지
+관계: 한 명의 사용자(One)가 여러 개의 게시물(Many)을 작성합니다.
+모델링: 자식(Posts)이 부모(Users)를 참조합니다 ({ "user_id": ... }).
+주된 이유: 만약 부모(Users) 정보를 자식(Posts)에 임베딩하면, 사용자 정보가 그가 쓴 모든 게시물에 중복되어 저장됩니다. 사용자 이름이나 프로필이 변경될 때 모든 게시물을 수정해야 하는 큰 문제가 발생합니다. 따라서 데이터의 일관성과 정규화를 위해 참조를 사용합니다.
+Posts가 Comments를 참조하는 이유: 무한 배열(Unbounded Array) 문제 방지
+관계: 하나의 게시물(One)에 여러 개의 댓글(Many, 잠재적으로 수만 개)이 달릴 수 있습니다. (One-to-Squillions)
+모델링: 자식(Comments)이 부모(Posts)를 참조합니다 ({ "post_id": ... }).
+주된 이유: 만약 자식(Comments)을 부모(Posts)에 임베딩하면, 댓글이 달릴 때마다 게시물 문서 내의 댓글 배열이 계속 커집니다. 이는 문서 크기를 비대하게 만들어 성능을 저하시키고, 결국 16MB 문서 크기 제한에 도달하게 만드는 '무한 배열 안티패턴'을 유발합니다. 확장성을 위해 참조를 사용합니다.
+올바른 스키마 요약:
+Users 컬렉션: 사용자 정보의 원본.
+Posts 컬렉션: user_id를 통해 Users를 참조.
+Comments 컬렉션: post_id를 통해 Posts를, user_id를 통해 Users를 각각 참조.
+결론: 데이터 모델링 시 단순히 "일대다" 관계로 판단하는 것을 넘어, "다(Many)"에 해당하는 쪽이 얼마나 커질 수 있는지, 그리고 데이터가 얼마나 자주 변경되는지를 고려하여 임베딩할지 참조할지를 결정해야 합니다.
+60. 추가 개념: 배열 내 객체 쿼리 - 여러 조건의 결합 ($elemMatch)
+문제
+orders 컬렉션에는 items라는 객체 배열 필드가 있습니다. items 배열 내의 항목 중 price가 $1000를 초과하고 동시에 quantity가 1인 항목이 하나 이상 포함된 모든 주문을 찾는 올바른 쿼리는 무엇입니까?
+데이터 예시:
+JSON
+{
+  "customerName": "Jane Doe",
+  "items": [
+    { "product": "Laptop", "price": 1200, "quantity": 1 },
+    { "product": "Mouse", "price": 25, "quantity": 2 }
+  ]
+}
+
+출제자 의도
+배열 내 단일 객체가 여러 조건을 동시에 만족해야 하는 경우, 점 표기법의 한계를 이해하고 $elemMatch를 올바르게 사용할 수 있는지 평가합니다.
+나의 오답
+JavaScript
+db.orders.find({ "items.price": { $gt: 1000 }, "items.quantity": 1 })
+
+오답 분석: 이 쿼리는 $elemMatch를 사용하지 않았습니다. 이 경우 MongoDB는 items.price 조건과 items.quantity 조건을 독립적으로 취급합니다. 즉, 쿼리는 "이 주문의 items 배열 안에 가격이 $1000를 넘는 상품이 하나라도 있고, 그리고 (별개로) 수량이 1인 상품이 하나라도 있는가?" 라고 묻는 것과 같습니다. 두 조건이 같은 상품에 적용되어야 한다는 요구사항을 충족시키지 못합니다.
+예를 들어, 아래와 같은 문서는 잘못 검색됩니다.
+JSON
+// 이 문서는 '나의 오답' 쿼리에 의해 잘못 선택됩니다.
+{
+  "customerName": "Wrong Match",
+  "items": [
+    { "product": "Super Monitor", "price": 1500, "quantity": 2 }, // 가격 조건은 여기서 충족
+    { "product": "Keyboard", "price": 100, "quantity": 1 }      // 수량 조건은 여기서 충족
+  ]
+}
+
+위 문서에는 가격이 1000을 넘으면서 동시에 수량이 1인 상품은 없지만, '나의 오답' 쿼리는 이 문서를 결과에 포함시킵니다.
+정답
+JavaScript
+db.orders.find({ "items": { $elemMatch: { "price": { $gt: 1000 }, "quantity": 1 } } })
+
+정답 해설: 이 쿼리는 $elemMatch를 올바르게 사용하여, items 배열의 요소 중 price가 $1000보다 크고 동시에 quantity가 1인 항목이 하나 이상 있는 문서를 찾습니다. $elemMatch\ 연산자는 배열 내의 동일한 하위 문서(sub-document) 안에서 두 조건이 모두 충족되어야 함을 보장하며, 이것이 바로 이 시나리오에서 요구하는 정확한 동작입니다.
+핵심 개념 정리
+점 표기법 (Dot Notation)의 한계: 여러 조건을 점 표기법으로 나열하면, 각 조건이 배열 내의 서로 다른 요소에서 충족되어도 전체 문서는 참으로 간주될 수 있습니다.
+$elemMatch의 역할: $elemMatch는 제공된 모든 쿼리 조건이 배열 내의 단일 요소(객체) 하나에서 모두 만족될 때만 해당 문서를 반환하도록 보장합니다.
+결론: 배열 내 객체를 쿼리할 때, 여러 조건이 반드시 동일한 객체 내에서 충족되어야 한다면, 그때는 반드시 $elemMatch를 사용해야 합니다. 조건이 하나일 경우에는 간단한 점 표기법을 사용해도 됩니다.
+
+
+네, 이 문제는 배열 필드에 unique 인덱스를 적용할 때의 동작 방식을 정확히 이해하는 것이 핵심입니다. 단순히 unique: true 옵션을 추가하는 것 이상의 의미가 있습니다. 61번 항목으로 정리해 드리겠습니다.
+
+61. 추가 개념: 배열에 대한 고유 인덱스 (Unique Index on Arrays)
+문제
+students 컬렉션이 있습니다. 각 학생이 정확히 동일한 과목 조합을 갖는 것을 방지하기 위해 subjects 배열 필드에 고유 인덱스를 생성하려고 합니다. 어떤 MongoDB 작업을 사용해야 할까요?
+데이터 예시:
+JSON
+{ "_id": 1, "name": "Alice", "subjects": ["Math", "Physics"] },
+{ "_id": 2, "name": "Bob", "subjects": ["Math", "Computer Science"] }
+
+
+출제자 의도
+배열 필드에 unique: true 옵션을 사용하여 인덱스를 생성하는 방법을 알고 있는지, 그리고 이 인덱스가 어떻게 동작하는지(멀티키 인덱스) 이해하고 있는지 평가합니다.
+나의 오답
+db.students.createIndex({subjects: 1})
+오답 분석:
+이 작업은 subjects 배열 필드에 인덱스를 생성하지만, 여기에는 고유성(uniqueness)을 강제하는 옵션이 빠져 있습니다. 문제의 요구사항은 '중복된 조합'을 막는 것이므로, 이 인덱스로는 목적을 달성할 수 없습니다.
+정답
+db.students.createIndex({subjects: 1}, {unique: true})
+정답 해설:
+createIndex 작업은 MongoDB에서 인덱스를 생성하는 데 사용되며, {unique: true} 옵션은 subjects 배열 필드에 대한 고유성을 강제합니다.
+심층 분석: 배열에 대한 unique 인덱스는 어떻게 동작하는가?
+이 부분이 매우 중요합니다. 배열에 unique 인덱스를 생성하면, MongoDB는 **멀티키 인덱스(Multikey Index)**를 만듭니다. 이는 배열의 **각 요소(element)**에 대해 개별적인 인덱스 키를 생성한다는 의미입니다.
+그리고 unique: true 제약 조건은 이 개별적인 인덱스 키 각각에 대해 적용됩니다.
+즉, 이 인덱스는 "두 명의 학생이 정확히 동일한 과목 조합을 가질 수 없다"를 보장하는 것이 아니라, "두 명의 학생이 단 하나의 과목이라도 겹치는 것을 허용하지 않는다"는 훨씬 더 강력한 규칙을 강제합니다.
+예시로 보는 동작 방식
+1. 인덱스 생성:
+JavaScript
+db.students.createIndex({ subjects: 1 }, { unique: true })
+
+
+2. 데이터 삽입 시도:
+JavaScript
+// Alice 삽입 (성공)
+db.students.insertOne({ name: "Alice", subjects: ["Math", "Physics"] })
+// MongoDB는 "Math"와 "Physics"에 대한 인덱스 키를 생성합니다.
+
+// Bob 삽입 (실패!)
+db.students.insertOne({ name: "Bob", subjects: ["Math", "Computer Science"] })
+
+
+3. 결과:
+Bob의 문서는 삽입되지 않고 **중복 키 오류(duplicate key error)**가 발생합니다. 왜냐하면 Bob의 subjects 배열에 있는 "Math"가 Alice의 subjects 배열에 이미 존재하여, "Math"라는 인덱스 키가 중복되기 때문입니다.
+그렇다면 "정확히 동일한 조합"을 막으려면 어떻게 해야 할까?
+이 문제의 원래 의도("정확히 동일한 조합 방지")를 달성하려면, MongoDB만으로는 부족하고 애플리케이션 로직이 함께 사용되어야 합니다.
+해결책: 배열을 항상 정렬하여 저장하기
+애플리케이션 코드: 학생 문서를 데이터베이스에 저장하기 전에, subjects 배열을 항상 알파벳순으로 정렬합니다.
+["Physics", "Math"] -> ["Math", "Physics"]
+["Math", "Physics"] -> ["Math", "Physics"]
+MongoDB 인덱스: 그리고 나서 db.students.createIndex({ subjects: 1 }, { unique: true }) 인덱스를 사용합니다.
+이제 unique 인덱스는 배열 전체를 하나의 값으로 보고 고유성을 비교하게 됩니다.
+수정된 로직으로 데이터 삽입 시도:
+JavaScript
+// Alice 저장 (정렬 후) -> ["Math", "Physics"] (성공)
+db.students.insertOne({ name: "Alice", subjects: ["Math", "Physics"] })
+
+// David 저장 (정렬 후) -> ["Chemistry", "Physics"] (성공)
+db.students.insertOne({ name: "David", subjects: ["Chemistry", "Physics"] })
+
+// Eve 저장 (정렬 후) -> ["Math", "Physics"] (실패!)
+db.students.insertOne({ name: "Eve", subjects: ["Math", "Physics"] }) 
+
+
+Eve의 subjects 배열 ["Math", "Physics"]는 Alice의 배열과 완전히 동일하므로, 이제 고유 인덱스 제약 조건에 의해 삽입이 올바르게 거부됩니다.
+핵심 개념 정리
+인덱스 유형
+db.students.createIndex({ subjects: 1 }, { unique: true })
+동작 방식
+멀티키 인덱스(Multikey Index)
+고유성 강제 대상
+배열의 각 개별 요소(element)
+결과
+하나의 과목이라도 중복되면 삽입 실패
+"조합"의 고유성 보장
+불가능 (애플리케이션에서 배열 정렬 로직 추가 필요)
+
+
+네, 이 문제는 $lookup집계 단계의 가장 중요하고 기본적인 동작 원칙에 대한 것입니다. 많은 개발자들이 처음$lookup을 사용할 때 하는 흔한 실수이기도 합니다.
+결과가 왜 항상 배열이어야 하는지, 그 이유와 함께 62번 항목으로 정리해 드리겠습니다.
+
+62. 추가 개념: $lookup의 결과는 항상 배열(Array)이다
+문제
+orders 컬렉션과 customers 컬렉션이 있습니다. orders 컬렉션에서 집계 쿼리를 시작하여, customer_id를 기준으로 customers 컬렉션의 정보를 customer_details라는 필드로 가져오려고 합니다.
+$lookup 쿼리:
+JavaScript
+db.orders.aggregate([
+    {
+        $lookup: {
+            from: "customers",
+            localField: "customer_id",
+            foreignField: "customer_id",
+            as: "customer_details"
+        }
+    }
+])
+
+
+이 집계 쿼리가 반환하는 문서의 구조는 무엇일까요?
+출제자 의도
+$lookup 집계 단계의 출력 형식이, 일치하는 문서가 단 하나일 때라도 항상 배열이라는 점을 이해하고 있는지 평가합니다.
+나의 오답
+customer_details 필드가 단일 객체(embedded document)일 것이라고 예상했습니다.
+JSON
+{
+    ...,
+    "customer_details": { // <-- 배열이 아닌 객체
+        "_id": ObjectId("..."),
+        "customer_id": 1,
+        "name": "John Doe",
+        ...
+    }
+}
+
+
+오답 분석:
+customer_details가 임베디드 문서가 아닌 배열로 표시됩니다. $lookup 단계는 일치하는 문서가 하나만 있더라도 항상 배열을 반환합니다.
+정답
+customer_details 필드는 일치하는 고객 문서가 하나만 담긴 배열이 됩니다.
+JSON
+{
+    ...,
+    "customer_details": [ // <-- 항상 배열
+        {
+            "_id": ObjectId("..."),
+            "customer_id": 1,
+            "name": "John Doe",
+            ...
+        }
+    ]
+}
+
+
+정답 해설:
+$lookup 단계는 SQL의 LEFT OUTER JOIN과 유사하게 동작하며, as 필드에 지정된 이름으로 customers 컬렉션에서 일치하는 문서들의 배열을 반환합니다. customer_id가 일치하므로, 출력은 일치하는 고객 문서 하나를 포함하는 배열이 됩니다.
+핵심 개념 정리: 왜 항상 배열일까?
+$lookup의 결과 필드(as로 지정된 필드)는 일치하는 문서의 수에 관계없이 **항상 배열(array)**입니다. 그 이유는 일관성과 유연성 때문입니다.
+from 컬렉션에서 localField와 foreignField가 일치하는 문서는 다음과 같은 세 가지 경우가 있을 수 있습니다.
+일치하는 문서가 1개인 경우 (이 문제의 경우):
+결과: [ { ... } ] (요소가 하나인 배열)
+일치하는 문서가 여러 개인 경우:
+결과: [ { ... }, { ... }, ... ] (요소가 여러 개인 배열)
+일치하는 문서가 없는 경우:
+결과: [] (빈 배열)
+MongoDB는 이 모든 경우를 일관되게 처리하기 위해 결과 타입을 항상 '배열'로 고정합니다. 이렇게 하면 애플리케이션 개발자는 $lookup 결과가 항상 배열이라고 가정하고 코드를 작성할 수 있어 훨씬 편리합니다.
+팁: 배열에서 객체만 꺼내고 싶다면?
+만약 조인 결과가 항상 1개이거나, 1개만 필요해서 배열이 아닌 객체로 만들고 싶다면, $lookup 바로 다음에 $unwind 또는 $arrayElemAt 단계를 추가할 수 있습니다.
+1. $unwind 사용:
+JavaScript
+// ... $lookup 단계 이후 ...
+{ $unwind: "$customer_details" } 
+// customer_details 배열을 "풀어서" 하위 문서로 만듭니다.
+// 단점: 일치하는 문서가 없으면(빈 배열이면) 해당 주문 문서 전체가 결과에서 사라집니다.
+
+
+2. $arrayElemAt 사용 (더 안전한 방법):
+JavaScript
+// ... $lookup 단계 이후 ...
+{
+  $addFields: {
+    customer_details: { $arrayElemAt: [ "$customer_details", 0 ] }
+  }
+}
+// customer_details 배열의 0번째 요소(첫 번째 객체)를 꺼내서 덮어씁니다.
+// 장점: 일치하는 문서가 없어도 주문 문서는 사라지지 않고, customer_details 필드가 null이 됩니다.
+
+
+
+
+63. 추가 개념: 집계 결과 저장 ($out vs. $merge)
+문제
+orders 컬렉션의 데이터를 집계하여 고객별 총매출을 계산한 후, 그 결과를 이미 존재하는 customer_sales 컬렉션에 저장하려고 합니다. $out 단계를 사용한 집계 파이프라인을 실행하면 customer_sales 컬렉션의 최종 상태는 어떻게 될까요?
+집계 파이프라인:
+JavaScript
+db.orders.aggregate([
+    {
+        $group: {
+            _id: "$customer_id",
+            total_spent: { $sum: "$order_total" }
+        }
+    },
+    {
+        $out: "customer_sales"
+    }
+])
+
+출제자 의도
+집계 결과를 컬렉션에 쓸 때, 파괴적인(destructive) 덮어쓰기 작업을 수행하는 $out의 동작을 정확히 이해하고 있는지, 그리고 이를 데이터를 보존하는 다른 방식과 구분할 수 있는지 평가합니다.
+나의 오답
+customer_sales 컬렉션에는 각 고객에 대한 집계 데이터가 포함될 것이며, 기존 데이터는 보존될 것이다.
+오답 분석: $out은 기존 데이터를 보존하지 않습니다. 이 단계는 집계 결과로 대상 컬렉션 전체를 **교체(replace)**합니다.
+정답
+customer_sales 컬렉션은 새로운 집계 결과로 덮어쓰여지고, 모든 기존 데이터는 삭제될 것이다.
+정답 해설: $out 단계가 사용되면, 대상 컬렉션(이 경우 customer_sales)을 완전히 덮어씁니다. customer_sales에 있던 기존 문서들은 모두 삭제되고, 컬렉션은 새로운 집계 결과로 대체됩니다.
+핵심 개념 정리: $out vs. $merge
+$out의 파괴적인 동작 때문에, 최신 MongoDB 버전에서는 더 유연하고 안전한 $merge 단계가 도입되었습니다. 두 단계의 차이점을 이해하는 것이 매우 중요합니다.
+구분
+$out
+$merge
+동작 방식
+덮어쓰기 (Overwrite/Replace)
+병합 및 업데이트 (Merge/Update)
+기존 데이터
+모두 삭제됨
+보존, 업데이트 또는 병합 가능
+인덱스
+기존 인덱스는 유지됨
+기존 인덱스는 유지됨
+주요 사용 사례
+- 임시 집계 결과 저장 - 스냅샷 생성 - 기존 데이터를 완전히 버려도 될 때
+- 기존 데이터에 새로운 집계 결과 추가/업데이트 - 데이터 증분 업데이트 - 변경 데이터 캡처(CDC)
+
+Sheets로 내보내기
+
+Shutterstock
+$out: "철거 후 재건축"
+$out은 대상 컬렉션이라는 **"기존 건물을 완전히 허물고, 집계 결과라는 새 건물"**을 짓는 것과 같습니다. 이전 건물의 흔적은 남지 않습니다.
+$out 사용 시 customer_sales의 변화:
+실행 전: { "_id": "old_customer", "total_spent": 50 }
+실행 후: { "_id": 1, "total_spent": 250 }, { "_id": ..., ... } (old_customer 데이터는 사라짐)
+$merge: "리모델링 또는 증축"
+$merge는 대상 컬렉션이라는 **"기존 건물을 유지하면서, 집계 결과를 가지고 리모델링하거나 새로운 부분을 증축"**하는 것과 같습니다. 기존 구조를 활용하고 변경이 필요한 부분만 수정합니다.
+$merge를 사용한 쿼리 예시:
+JavaScript
+db.orders.aggregate([
+    {
+        $group: {
+            _id: "$customer_id",
+            total_spent: { $sum: "$order_total" }
+        }
+    },
+    {
+        $merge: {
+            into: "customer_sales", // 대상 컬렉션
+            on: "_id",              // 문서를 식별할 기준 필드
+            whenMatched: "replace", // 일치하는 문서가 있으면 덮어쓰기
+            whenNotMatched: "insert"// 일치하는 문서가 없으면 새로 삽입
+        }
+    }
+])
+
+$merge 사용 시 customer_sales의 변화:
+실행 전: { "_id": "old_customer", "total_spent": 50 }
+실행 후: { "_id": "old_customer", "total_spent": 50 }, { "_id": 1, "total_spent": 250 }, ... (old_customer 데이터 보존됨)
+결론: 집계 결과를 저장할 때, 기존 데이터를 완전히 무시하고 새로 만들고 싶다면 $out을 사용합니다. 하지만 기존 데이터와 새로운 집계 결과를 병합하거나 업데이트해야 한다면, 훨씬 더 유연하고 안전한 **$merge**를 사용해야 합니다.
+
+
+네, 이 문제는 MongoDB에서 데이터의 무결성을 보장하는 두 가지 중요한 기능, 즉 **스키마 유효성 검사(Schema Validation)**와 **고유 인덱스(Unique Index)**의 역할을 정확히 구분할 수 있는지를 묻는 좋은 질문입니다. 두 기능은 종종 함께 사용되지만, 목적이 완전히 다릅니다.
+64번 항목으로 정리해 드리겠습니다.
+
+64. 추가 개념: 스키마 유효성 검사 vs. 고유 인덱스 (Schema Validation vs. Unique Index)
+문제
+MongoDB에서 스키마 유효성 검사와 관련된 MongoDB 개발자의 일반적인 작업을 정확하게 설명하는 문장은 무엇입니까?
+출제자 의도
+단일 문서의 구조와 형식을 검사하는 '스키마 유효성 검사'와, 컬렉션 전체에 걸쳐 필드 값의 중복을 막는 '고유 인덱스'의 역할을 명확히 구분할 수 있는지 평가합니다.
+나의 오답
+스키마 유효성 검사는 컬렉션의 모든 문서에 걸쳐 특정 필드의 고유성을 보장한다.
+오답 분석: 컬렉션 전체에 걸친 필드의 고유성(uniqueness)을 보장하는 것은 **고유 인덱스(unique index)**의 역할입니다. 스키마 유효성 검사는 개별 문서의 구조가 규칙에 맞는지를 검사할 뿐, 다른 문서와 값을 비교하지는 않습니다.
+정답
+스키마 유효성 검사는 문서 내에 필수 필드의 존재 여부와 해당 필드의 데이터 타입을 보장한다.
+정답 해설: MongoDB의 스키마 유효성 검사는 개발자가 규칙을 정의하여, 문서가 저장되거나 업데이트될 때 필수 필드가 존재하는지, 그리고 각 필드의 값이 지정된 데이터 타입(예: 문자열, 숫자, 배열)을 따르는지 등을 강제할 수 있도록 합니다.
+핵심 개념 정리: "설계도 검사" vs. "주민등록번호 중복 확인"
+두 기능의 역할을 건물과 입주자에 비유하면 쉽게 이해할 수 있습니다.
+구분
+스키마 유효성 검사 (Schema Validation)
+고유 인덱스 (Unique Index)
+비유
+건축 설계도(Blueprint) 검사
+전체 입주자 명부에서 주민등록번호 중복 확인
+주요 목적
+문서 구조의 일관성 유지
+필드 값의 고유성 보장
+적용 범위
+단일 문서 (Single Document)
+컬렉션 전체 (Entire Collection)
+검사 내용
+- 이 필드가 꼭 있어야 하는가? (required) - 이 필드는 숫자 타입이 맞는가? (bsonType) - 이 값은 0보다 큰가? (minimum)
+- 이 email 값을 가진 다른 사람이 이미 있는가?
+설정 방법
+db.runCommand({ collMod: ..., validator: { $jsonSchema: ... } })
+db.collection.createIndex({ field: 1 }, { unique: true })
+
+Sheets로 내보내기
+예시로 보는 동작 방식
+users 컬렉션에 다음과 같은 규칙을 적용한다고 가정해 봅시다.
+스키마 유효성 규칙: 모든 문서는 반드시 문자열 타입의 username과 email 필드를 가져야 한다.
+고유 인덱스 규칙: email 필드의 값은 컬렉션 전체에서 유일해야 한다.
+설정:
+JavaScript
+// 스키마 유효성 검사 설정
+db.runCommand({
+  collMod: "users",
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: [ "username", "email" ],
+      properties: {
+        username: { bsonType: "string" },
+        email: { bsonType: "string" }
+      }
+    }
+  }
+})
+
+// 고유 인덱스 생성
+db.users.createIndex({ email: 1 }, { unique: true })
+
+데이터 삽입 시도:
+정상적인 문서: db.users.insertOne({ username: "Alice", email: "alice@example.com" }) -> 성공: 스키마 규칙을 만족하고, 이메일이 중복되지 않았습니다.
+스키마 유효성 검사 실패: db.users.insertOne({ username: "Bob" }) // email 필드가 없음 -> 실패: "Document failed validation" 오류가 발생합니다. 스키마 규칙(설계도)을 위반했기 때문입니다.
+고유 인덱스 실패: db.users.insertOne({ username: "Charlie", email: "alice@example.com" }) // email 중복 -> 실패: "E11000 duplicate key error" 오류가 발생합니다. 다른 문서와 email 값이 중복되었기 때문입니다.
+결론: 스키마 유효성 검사는 **"문서가 올바른 양식인가?"**를 검사하고, 고유 인덱스는 **"이 값이 이미 사용되었는가?"**를 검사하는, 서로 다른 차원의 데이터 무결성 도구입니다.
+
+
+네, 이 문제는 배열 안에 포함된 여러 객체(임베디드 문서) 중 특정한 하나를 골라서 업데이트할 때 사용하는 **위치 연산자($)**의 역할을 이해하는 데 매우 중요한 예시입니다. 많은 개발자들이 이 개념에서 어려움을 겪곤 합니다.
+
+65. 추가 개념: 배열 내 특정 요소 업데이트 (위치 연산자 $)
+문제
+employees 컬렉션의 문서에는 projects라는 객체 배열 필드가 있습니다. "John Doe"라는 직원의 프로젝트 중 project_id가 "P124"인 프로젝트의 role을 "Senior Lead Developer"로 업데이트하는 올바른 명령어는 무엇입니까?
+데이터 예시:
+JSON
+{
+  "name": "John Doe",
+  "projects": [
+    { "project_id": "P123", "role": "Developer", ... },
+    { "project_id": "P124", "role": "Lead Developer", ... }
+  ]
+}
+
+
+출제자 의도
+배열 내 여러 객체 중 쿼리 조건과 일치하는 바로 그 객체를 특정하여 업데이트하기 위해 위치 연산자($)를 올바르게 사용해야 함을 이해하고 있는지 평가합니다.
+나의 오답
+JavaScript
+db.employees.updateOne(
+  { "name": "John Doe", "projects.project_id": "P124" },
+  { $set: { "projects.role": "Senior Lead Developer" } }
+)
+
+
+오답 분석:
+이 명령어는 projects.role을 업데이트하려고 하지만, 위치 연산자($)를 사용하지 않았습니다. projects 배열에는 여러 객체가 들어있는데, MongoDB는 이 중에서 몇 번째 객체의 role을 바꿔야 할지 특정할 수 없습니다. 따라서 이 업데이트는 의도와 다르게 동작하거나 실패하게 됩니다.
+정답
+JavaScript
+db.employees.updateOne(
+  { "name": "John Doe", "projects.project_id": "P124" },
+  { $set: { "projects.$.role": "Senior Lead Developer" } }
+)
+
+
+정답 해설:
+이 명령어는 위치 연산자 $를 올바르게 사용했습니다.
+query 부분: { "name": "John Doe", "projects.project_id": "P124" }
+먼저 name이 "John Doe"인 문서를 찾습니다.
+그 다음, 그 문서의 projects 배열 안에서 project_id가 "P124"인 요소(객체)를 찾습니다. (이 예시에서는 두 번째 요소가 일치합니다.)
+update 부분: { $set: { "projects.$.role": "Senior Lead Developer" } }
+여기서 $는 **"앞의 query 부분에서 일치했던 바로 그 배열 요소의 위치"**를 가리키는 자리 표시자(placeholder) 역할을 합니다.
+따라서 "projects.$.role"은 "projects 배열 안에서, 아까 찾았던 project_id가 'P124'였던 바로 그 객체의 role 필드"라는 매우 구체적인 지시가 됩니다.
+결과적으로, MongoDB는 "John Doe"의 projects 배열에서 "P124" 프로젝트를 정확히 찾아내어 해당 프로젝트의 role만 "Senior Lead Developer"로 변경합니다.
+핵심 개념 정리
+위치 연산자 ($): 배열 필드를 업데이트할 때, query 조건과 일치한 첫 번째 배열 요소의 위치를 가리키는 특별한 플레이스홀더입니다.
+사용 조건: update 부분에서 $ 연산자를 사용하려면, query 부분에서 업데이트하려는 바로 그 배열 필드에 대한 조건이 명시되어야 합니다. MongoDB는 이 쿼리 조건을 통해 $가 가리킬 '위치'를 찾기 때문입니다.
+한계: $ 연산자는 query와 일치하는 첫 번째 요소에만 적용됩니다. 만약 여러 배열 요소가 쿼리 조건과 일치하더라도 첫 번째 요소만 업데이트됩니다. (모든 일치 요소를 업데이트하려면 집계 파이프라인을 사용해야 합니다.)
+
