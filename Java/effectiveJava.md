@@ -1,4 +1,99 @@
-네, 그럼요. 우리가 나눈 대화의 핵심 내용을 처음부터 끝까지, 단계별로 명확하게 정리해 드릴게요.
+~~~java
+public abstract class Pizza {
+
+    public enum Topping {
+        HAM, MUSHROOM, ONION, PEPPER, SAUSAGE
+    }
+
+    final Set<Topping> toppings;
+
+    Pizza(Builder<?> builder) {
+        toppings = builder.toppings.clone();
+    }
+
+    abstract static class Builder<T extends Builder<T>> {
+
+        private EnumSet<Topping> toppings = EnumSet.noneOf(Topping.class);
+
+        public T addTopping(Topping topping) {
+            toppings.add(topping);
+            return self();
+        }
+
+        abstract Pizza build();
+
+        protected abstract T self();
+    }
+}
+~~~
+
+~~~java
+public class NyPizza extends Pizza {
+
+    public enum Size {
+        SMALL, MEDIUM, LARGE
+    }
+
+    private final Size size; // 필수 매개변수
+
+    private NyPizza(Builder builder) {
+        super(builder);
+        size = builder.size;
+    }
+
+    public static class Builder extends Pizza.Builder<Builder> {
+
+        private final Size size;
+
+        public Builder(Size size) {
+            this.size = size;
+        }
+
+        @Override
+        NyPizza build() {
+            return new NyPizza(this);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+    }
+
+}
+
+public class CalzonePizza extends Pizza {
+
+    private final boolean sauceInside; // 선택 매개변수
+
+    private CalzonePizza(Builder builder) {
+        super(builder);
+        sauceInside = builder.sauceInside;
+    }
+
+    public static class Builder extends Pizza.Builder<Builder> {
+
+        private boolean sauceInside = false;
+
+        public Builder sauceInside() {
+            sauceInside = true;
+            return this;
+        }
+
+        @Override
+        CalzonePizza build() {
+            return new CalzonePizza(this);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+    }
+
+}
+~~~
+
 
 ### ## 1. 모든 것의 시작: 기본 빌더 패턴
 
@@ -53,3 +148,6 @@
 | **3. 최종 해결** | `<T extends Builder<T>>` + `return self();` | **자기소개 규칙**으로 타입 안전성을 확보하고, `self()`를 통해 **강등 문제 없이** 체인을 완벽하게 유지함. |
 
 결론적으로, 이펙티브 자바의 피자 빌더 예제는 **상속 관계가 있는 복잡한 객체 계층 구조에서도 타입 안전성을 잃지 않고 유연한 메서드 체이닝을 구현**하기 위한, 매우 정교하고 우아한 설계 패턴의 정수라고 할 수 있습니다.
+
+
+
