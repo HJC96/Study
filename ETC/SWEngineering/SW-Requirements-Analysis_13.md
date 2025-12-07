@@ -1,4 +1,4 @@
-# 13강 요약: 기능 요구사항(Functional Requirement)의 정의
+# 기능 요구사항(Functional Requirement)의 정의
 
 ## 1. 분석의 대원칙: 분리 (Separation)
 * **MECE와 Orthogonality(직교성)의 적용:**
@@ -10,7 +10,6 @@
 * **수학적 정의:** 정의역(Domain)의 원소가 치역(Codomain)의 한 원소에 매핑되는 것.
 
 
-[Image of mathematical function mapping domain to codomain]
 
 * **소프트웨어 공학적 정의:**
     * **기능 = Input 대비 Output 값의 변화**
