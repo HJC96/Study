@@ -1,4 +1,4 @@
-# 15강 요약: 기능 요구사항 분석 실습 (Use Case Diagram)
+# 기능 요구사항 분석 실습 (Use Case Diagram)
 
 ## 1. 기능 요구사항 모델링의 종류
 기능 요구사항을 분석하는 모델링 방법은 다양하며, 이번 실습 과정에서는 다음 4가지를 순차적으로 다룸.
@@ -16,10 +16,6 @@
     * *비기능까지 포함하면 복잡도가 지나치게 증가하므로 권장하지 않음.*
 
 ## 3. 주요 구성 요소 (Notation)
-
-
-[Image of Use Case Diagram components: Actor, System Boundary, Use Case]
-
 
 | 요소 | 설명 | 표기법 |
 | :--- | :--- | :--- |

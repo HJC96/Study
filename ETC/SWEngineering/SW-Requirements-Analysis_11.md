@@ -1,4 +1,4 @@
-# 11강 요약: 요구공학(Requirements Engineering)과 분석의 본질
+# 요구공학(Requirements Engineering)과 분석의 본질
 
 ## 1. 요구공학의 전체 프레임워크
 요구사항을 체계적으로 도출하고 관리하는 **요구공학(Requirements Engineering)**은 다음의 4단계 흐름을 가짐.
@@ -38,8 +38,6 @@
 
 ## 4. 프로세스 도식화
 
-
-[Image of Requirements Engineering Process Flowchart]
 
 
 1.  **Input:** 이해관계자의 **관심사항(Concern)** (모호함 O)
