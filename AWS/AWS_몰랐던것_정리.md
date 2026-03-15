@@ -139,4 +139,3 @@ Private S3
 - “반복 조회” → ElastiCache
 - “정적 웹사이트” → S3 + CloudFront
 
-
